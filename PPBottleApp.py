@@ -2,6 +2,8 @@ from bottle import Bottle, run, template,request,TEMPLATE_PATH,static_file
 
 from SearchApi import searchApi
 
+from ppconfig import MasterPassword,MasterUsername
+
 # Hopefully this will work!
 PathToBottleWebApp = "./"
 PathToDataFilesOnRobsMachine = "../cookedData"
@@ -51,8 +53,9 @@ def server_static(filename):
 def server_static(filename):
     return static_file(filename, root=PathToSlickGridMaster+"lib/")
 
+# this needs to move to config!
 def does_authenticate(user,password):
-    return (user == "contractofficer" and password == "savegovmoney")
+    return (user == MasterUsername and password == MasterPassword)
 
 
 from bottle import template
@@ -69,7 +72,9 @@ def pptriv():
         return template('BadAuthentication')
     search_string = request.forms.get('search_string')
     search_string = search_string if search_string is not None else "Dell Latitude"
-    return template('MainPage',search_string=search_string,user=user,password=password)
+    psc_pattern = request.forms.get('psc_pattern')
+    return template('MainPage',search_string=search_string,user=user,\
+                    password=password,psc_pattern=psc_pattern)
 
 @app.route('/api',method='POST')
 def pptriv():
@@ -78,7 +83,8 @@ def pptriv():
     if (not does_authenticate(user,password)):
         return template('BadAuthentication')        
     search_string = request.forms.get('search_string')
+    psc_pattern = request.forms.get('psc_pattern')
     print "API search_string" + search_string
-    return searchApi(PathToDataFilesOnRobsMachine,search_string)
+    return searchApi(PathToDataFilesOnRobsMachine,search_string,psc_pattern)
 
 

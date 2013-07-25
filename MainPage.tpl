@@ -5,12 +5,14 @@
     <body>
 <form action="/PricesPaid" method="post">
 Text Search: <input type="text" name="search_string">  <br />
+PSC Search: <input type="text" name="psc_pattern">  <br />
 <input type="submit" value="Search" />
 <input type="hidden" name="user" value="contractofficer" />
 <input type="hidden" name="password" value="savegovmoney" />
 </form>
 
 <span class="majorlabel">You Searched for: {{search_string}}</span>
+<span class="majorlabel">PSC Pattern: {{psc_pattern}}</span>
 <span>Number returned:</span>
 <span id="placeForNumberReturned"></span>
 
@@ -384,7 +386,8 @@ var thingToPlot = data.forEach(function (e) {
 $.post("api",
   { search_string: '{{search_string}}',
     user: '{{user}}',
-    password: '{{password}}'
+    password: '{{password}}',
+    psc_pattern: '{{psc_pattern}}'
   },
   processAjaxSearch
 );

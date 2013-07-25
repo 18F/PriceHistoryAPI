@@ -77,7 +77,7 @@ def loadDirectory(dirpath,pattern):
 
 # mod_wsgi pipe output to the error log.  The Bottle webserver doesn't,
 # so this difference can be a little confusing.
-def searchApi(pathToData,search_string):
+def searchApi(pathToData,search_string,psc_pattern):
     global globalTransactionDir
     localTransactionDir = None
     
@@ -98,7 +98,8 @@ def searchApi(pathToData,search_string):
         else:
             print "Using Cached globalTransactionDir"
         tsearch = time.clock()
-        transactions = globalTransactionDir.findAllMatching(search_string)
+        transactions = globalTransactionDir.findAllMatching(search_string,\
+                                                            psc_pattern)
         print "Time To Search ALL Data for "+search_string + ": " +\
           str(time.clock()-tsearch)
     else:
@@ -107,7 +108,8 @@ def searchApi(pathToData,search_string):
         localTransactionDir = Transaction.TransactionDirector()        
         t1 = time.clock()
 
-        globalTransactionDir.transactions = loadDirectory(pathToData,search_string)
+        globalTransactionDir.transactions = \
+          loadDirectory(pathToData,search_string,psc_pattern)
         numRows = len(globalTransactionDir.transactions)
         print "Time To Load Data for "+search_string + ": " +str(time.clock()-t1)
         transactions = localTransactionDir.transactions

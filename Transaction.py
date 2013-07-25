@@ -62,7 +62,7 @@ class BasicTransaction:
         return xdict
 
     def cleanUpData(self,qdict):
-        qdict['unitPrice'] = qdict['unitPrice'].replace("$","")
+        qdict[PRICE] = qdict[PRICE].replace("$","")
         return qdict
     
     def getJSON(self):
@@ -74,8 +74,8 @@ class BasicTransaction:
     # First check: we have to have a UnitPrice which is a number!
     def isValidTransaction(self):
         try:
-            dummx =  float(self.dict["unitPrice"])
-            dummy =  int(self.dict["unitsOrdered"])
+            dummx =  float(self.dict[PRICE])
+            dummy =  int(self.dict[UNITS])
             return True;
         except ValueError:
             return False;
@@ -88,14 +88,19 @@ class TransactionDirector:
     def addTransaction(self,name):
         self.transactions.append(name)
 
-    def findAllMatching(self,pattern):
+    def findAllMatching(self,pattern,psc_pattern):
         matches = []
+        print "patterns"
+        print pattern
+        print psc_pattern
         for tr in self.transactions:
-            if pattern:
-                result = re.search(pattern, tr.getSearchMemento())
-                if (result):
-                    matches.append(tr)
-            else:
+            matchesGeneral = False
+            if ((pattern is None) or re.search(pattern, tr.getSearchMemento()) is not None):
+                matchesGeneral = True
+            matchesPSC = False
+            if ((psc_pattern is None) or re.search(psc_pattern, tr.dict[PSC]) is not None):
+                matchesPSC = True
+            if (matchesPSC and matchesGeneral):
                 matches.append(tr)
         return matches
             

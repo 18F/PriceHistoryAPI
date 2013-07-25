@@ -231,6 +231,7 @@ var thingToPlot = data.forEach(function (e) {
 </script>
 
 <h2>You Searched for: {{search_string}}</h2>
+<h2>You Searched PSC: {{psc_pattern}}</h2>
  <h1> Prices Paid </h1>
 <form action="/PricesPaid" method="get">
 Text Search: <input type="text" name="search_string">  <br />
