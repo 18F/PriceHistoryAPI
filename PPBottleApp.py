@@ -21,6 +21,18 @@ app = Bottle()
 def server_static(filename):
     return static_file(filename, root=PathToJSFiles)
 
+@app.route('/theme/<filename>')
+def server_static(filename):
+    return static_file(filename, root=PathToBottleWebApp+"theme/")
+
+@app.route('/theme/css/<filename>')
+def server_static(filename):
+    return static_file(filename, root=PathToBottleWebApp+"theme/css/")
+
+@app.route('/theme/img/<filename>')
+def server_static(filename):
+    return static_file(filename, root=PathToBottleWebApp+"theme/img/")
+
 @app.route('/css/<filename>')
 def server_static(filename):
     return static_file(filename, root=PathToCSSFiles)

@@ -48,4 +48,11 @@ else to do tonight.
 
 July 24th 9:21
 
-Have just done a git init.  Will not test.
+Have just done a git init.  Will now test.
+
+July 25th 8:45
+
+Priorities:
+* Attack Marty's desgin.
+* Put the date in.
+

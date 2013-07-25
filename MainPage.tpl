@@ -1,20 +1,59 @@
-    <html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Prices Paid v. 0.1</title></head>
-    <body>
-<form action="/PricesPaid" method="post">
-Text Search: <input type="text" name="search_string">  <br />
-PSC Search: <input type="text" name="psc_pattern">  <br />
-<input type="submit" value="Search" />
-<input type="hidden" name="user" value="contractofficer" />
-<input type="hidden" name="password" value="savegovmoney" />
-</form>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>PricesPaid</title>
+    <meta name="robots" content="all">
+    <link href="theme/css/style.css" rel="stylesheet" type="text/css" media="screen, projection">
+</head>
+<body>
+
+    <!-- Start header -->
+    <div id="header">
+        <!-- Top part of header -->
+        <div class="inner">
+            <h1 id="pricespaid_logo"><img src="theme/img/logo_pricespaid.png" alt="PricesPaid" /></h1>
+            <span id="gsa_logo">Powered by <img src="theme/img/gsa_logo.png" alt="GSA" /></span>
+            <div style="clear:both;"></div>
+        </div>
+
+        <!-- Nav of commodities -->
+        <div id="nav">
+            <div class="inner">
+                <ul id="commodities">
+                    <li class="commodity selected"><a href="#"><img src="theme/img/icon-cpu.png" /><strong>CPU</strong></a></li>
+                    <li class="commodity"><a href="#"><img src="theme/img/icon-software.png" /><strong>Software</strong></a></li>
+                    <li class="commodity"><a href="#"><img src="theme/img/icon-supplies.png" /><strong>Supplies</strong></a></li>
+                    <li class="commodity"><a href="#"><img src="theme/img/icon-punchcards.png" /><strong>Punchcards</strong></a></li>
+                    <li class="commodity"><a href="#"><img src="theme/img/icon-configuration.png" /><strong>Configuration</strong></a></li>
+                    <li class="commodity"><a href="#"><img src="theme/img/icon-minimicro.png" /><strong>Mini-Micro</strong></a></li>
+                    <li class="commodity"><a href="#"><img src="theme/img/icon-component.png" /><strong>Component</strong></a></li>
+                    <div style="clear:both;"></div>
+                </ul>  
+
+                <a href="" id="previous_commodities" class="commodities_arrows">Prvious Commodities</a>
+                <a href="" id="next_commodities" class="commodities_arrows">Next Commodities</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content ... below the header -->
+    <div id="content" class="inner">
+        <!-- Start search -->
+        <div id="search">
+	    <form action="/PricesPaid" method="post">
+                <input type="text" name="search_string" id="search_string" value="{{search_string}}" />
+		<input type="text" name="psc_pattern" value="{{psc_pattern}}">
+		<input type="hidden" name="user" value="contractofficer" />
+		<input type="hidden" name="password" value="savegovmoney" />
+                <button type="submit" name="submit" id="submit">
+<!-- Need to replace this icon here
+<img src="theme/img/search_icon.png" /> -->
+Search</button></submit>
+            </form>
+        </div>
 
 <span class="majorlabel">You Searched for: {{search_string}}</span>
 <span class="majorlabel">PSC Pattern: {{psc_pattern}}</span>
-<span>Number returned:</span>
-<span id="placeForNumberReturned"></span>
 
   
 <div id="chartContainer">
@@ -25,15 +64,35 @@ PSC Search: <input type="text" name="psc_pattern">  <br />
     </table>
 </section>
 </div>
+        <!-- Start results header -->
+        <div id="results-header">
+            <h2><span id="placeForNumberReturned"></span> Results</h2>
+            <form action="" id="results-sortby" name="sortby">
+                <label for="type">Sort by:</label>
+		<div id="dropdownWrapper">
+                <select id="sortColumn" >
+                    <option value="unitPrice">Unit Price</option>
+                    <option value="unitsOrdered">Units</option>
+                    <option value="vendor">Vendor</option>
+                    <option value="productDescription">Product Description</option>
+                    <option value="contractingAgency">Contracting Agency</option>
+                    <option value="awardIdIdv">Award ID/IDV</option>
+                    <option value="commodityType">Commodity Type</option>
+                    <option value="psc">PSC</option>
+                </select>
+		</div>
+            </form>
+            <div style="clear:both;"></div>
+        </div>
+
 
  <div id="myGrid" style="width:100%;height:500px;"></div>
+
  <div id="detailArea">
 </div>
     <script src="../js/jquery-1.10.2.min.js"></script>
       <link rel="stylesheet" href="../SlickGrid-master/slick.grid.css" type="text/css"/>
       <link rel="stylesheet" href="../SlickGrid-master/css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css"/>
-      <link rel="stylesheet" href="css/examples.css" type="text/css"/>
-
 
     <script src="../SlickGrid-master/lib/jquery-1.7.min.js"></script>
     <script src="../SlickGrid-master/lib/jquery.event.drag-2.2.js"></script>
@@ -88,7 +147,7 @@ PSC Search: <input type="text" name="psc_pattern">  <br />
         overflow: auto;
         height: 250px;
      }
-     #legendtable {
+     #legendtable {p
         font-size: 12px;
         border: 1px solid #cdcdcd;
         border-collapse: collapse;
@@ -101,6 +160,41 @@ PSC Search: <input type="text" name="psc_pattern">  <br />
 
 <script>
 var transactionData = [];
+
+function sortByColumn(col,asc) {
+    var currentSortCol = col;
+    var isAsc = asc;
+    var stringSort = function(a,b) {
+       var ret;
+       if (a[currentSortCol] < b[currentSortCol]) {
+    ret = 1;
+       } else if (a[currentSortCol] > b[currentSortCol]) {
+           ret = -1;
+       } else {
+           ret = 0;
+       }
+       if (!isAsc) 
+    return -1*ret;
+       else 
+    return ret;
+    }
+    var numberSort = function(a,b) {
+       var ret;
+       if (parseFloat(a[currentSortCol]) < parseFloat(b[currentSortCol])) {
+    ret = 1;
+       } else if (parseFloat(a[currentSortCol]) > parseFloat(b[currentSortCol])) {
+           ret = -1;
+       } else {
+           ret = 0;
+       }
+       if (!isAsc) 
+    return -1*ret;
+       else 
+    return ret;
+    }
+     transactionData.sort(currentSortCol == "unitPrice" || 
+      currentSortCol == "unitsOrdered" ? numberSort : stringSort);
+}
 
 
 function processAjaxSearch(dataFromSearch) {
@@ -203,6 +297,26 @@ width: 200},
     }
 // These strings really need to transferred to the server
 // In order for us to have proper abstraction and language translation    
+
+   function renderStyledDetail(dataRow) {
+      var html = "";
+      html +=      ' <div class="result">';
+      html +=      '<img src="http://placehold.it/120x120" class="result-image" />';
+      html +=      '<p class="result-details"><strong> '+dataRow.productDescription.substring(0,20)+' </strong> '+dataRow.productDescription.substring(0,200)+' </p>';
+      html +=      '<div class="result-meta">';
+      html +=          '<p class="result-unitscost"><strong> '+dataRow.unitPrice+'</strong> '+dataRow.unitsOrdered+' units</p>';
+      html +=          '<p class="result-whenwho">August 2012 <strong>'+dataRow.contractingAgency+'</strong></p>';
+      html +=      '</div>';
+      html +=      '<div style="clear:both;"></div>';
+      html +=      '<div class="result-smallprint">';
+      html +=          '<span class="indicator red"></span>';
+      html +=          '<p><strong>Vendor:</strong> '+dataRow.vendor.substring(0,50)+'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Award ID/IDV:</strong> '+dataRow.awardIdIdv+ '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>PSC:</strong> '+dataRow.psc+ '</span>';
+      html +=          '<a href="" class="result-more">Display Item Details <img src="theme/img/display-details.png" /></a>';
+      html +=          '<div style="clear:both;"></div>';
+      html +=      '</div>';
+      html +=      '</div>';
+      return html;
+ }
    function renderDetail(dataRow) {
       var html = "";
       html += "<table>";
@@ -221,7 +335,7 @@ width: 200},
     div.innerHTML = "";
     data.forEach(function (e) {
         if (e.starred == "Starred") {
-        div.innerHTML += renderDetail(e);
+        div.innerHTML += renderStyledDetail(e);
         div.innerHTML += "<p></p>";
     }
     });
@@ -236,44 +350,24 @@ width: 200},
     return transactionData.length;
   }
 
+$("#dropdownWrapper").change(function(){
+      var col = $("#sortColumn").val();
+      sortByColumn(col,true);
+      grid.setData(transactionData);
+      grid.invalidateAllRows();
+      grid.render();
+    });
+
   $(function () {
     grid = new Slick.Grid("#myGrid", transactionData, columns, options);
 
 // There's got to be a way to make this more compact!!!
     grid.onSort.subscribe(function (e, args) {
-      var currentSortCol = args.sortCol;
+
+      var currentSortCol;
       var isAsc = args.sortAsc;
       currentSortCol = args.sortCol.field;
-      var stringSort = function(a,b) {
-         var ret;
-         if (a[currentSortCol] < b[currentSortCol]) {
-	     ret = 1;
-         } else if (a[currentSortCol] > b[currentSortCol]) {
-             ret = -1;
-         } else {
-             ret = 0;
-         }
-         if (!isAsc) 
-	     return -1*ret;
-         else 
-	     return ret;
-      }
-      var numberSort = function(a,b) {
-         var ret;
-         if (parseFloat(a[currentSortCol]) < parseFloat(b[currentSortCol])) {
-	     ret = 1;
-         } else if (parseFloat(a[currentSortCol]) > parseFloat(b[currentSortCol])) {
-             ret = -1;
-         } else {
-             ret = 0;
-         }
-         if (!isAsc) 
-	     return -1*ret;
-         else 
-	     return ret;
-      }
-
-      transactionData.sort(currentSortCol == "unitPrice" || currentSortCol == "unitsOrdered" ? numberSort : stringSort);
+      sortByColumn(currentSortCol,isAsc);
 
       grid.setData(transactionData);
       grid.invalidateAllRows();
@@ -394,7 +488,5 @@ $.post("api",
 
 
 </script>
-
 </body>
-
 </html>
