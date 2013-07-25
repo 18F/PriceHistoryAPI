@@ -1,0 +1,39 @@
+This document describes a filename convention for describing data which is 
+ready to be part of the Prices Paid database.
+
+The Prices Paid database at present consists of a directory of files
+following the following pattern:
+
+[Whateveryouwant]-pppifver-[FormatName]-[FormatNumber]-[FormatVersion].csv
+
+where 
+1) "Whateveryouwant" should not contain the string "pppifver"
+2) FormatName should not contain a hyphen (e.g. FedBid or OS2)
+3) FormatNumber is a number (no dashes, no decimals.)
+4) FormatVersion is a four-digit version number separated by hyphens
+ like :0-0-0-1 or 13-2-3-14
+
+The idea here is that the FormatName is human readable, the FormatNumber 
+truly identifies a growing set of formats, the Format Version allows us to 
+revise the versions.
+
+The purpose of this system is to mark the format of a file.  At the 
+time of this writing, there will be two formats: FedBid (1) and OS2 (2).
+
+We will probably write python code that will decode the filename into 
+the python file that knows how to read the data into something resembling
+a standard format.  Unbeknownst to the user, fields which don't match
+our standard format will still exist, although they won't be rendered in 
+grid except as a uniform field.
+
+Their are only 5 fields you have to have at present:
+1) Number of Units
+2) Unit Cost
+3) Purchasing Agency
+4) PSC code 
+5) Vendor
+
+Both the FedBid and the OS2 data sets have some fields which don't fit 
+into these 5 fields, but will still be searchable.
+
+
