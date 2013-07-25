@@ -46,3 +46,6 @@ and then filling in the Commodity Type and Award ID/IDV field if I
 can.  But before I do that, I need to take a break and decide what 
 else to do tonight.
 
+July 24th 9:21
+
+Have just done a git init.  Will not test.
