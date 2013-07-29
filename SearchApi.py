@@ -117,6 +117,7 @@ def searchApi(pathToData,search_string,psc_pattern):
     print "Total Number of Transactions in Dataset: "+str(len(transactions))
     
     transactions = [tr.dict for tr in transactions[0:LIMIT_NUM_RETURNED_TRANSACTIONS]]
-    transactionDict = dict(zip(range(0, len(transactions)-1),transactions))
+    print "Second Total Number of Transactions in Dataset: "+str(len(transactions))
+    transactionDict = dict(zip(range(0, len(transactions)),transactions))
     print "Time To Return from SearchApi: " +str(time.clock()-timeSearchBegin)
     return transactionDict

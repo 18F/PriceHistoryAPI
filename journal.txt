@@ -34,9 +34,6 @@ Priorities:
 
 * Make graph bigger x
 * Make Legend better x 
-* Make better fielded detail display
-* Use color effectively
-* Tie all javacript together
 * Remove to 20% x
 
 5:10 Sunday night.
@@ -53,6 +50,16 @@ Have just done a git init.  Will now test.
 July 25th 8:45
 
 Priorities:
-* Attack Marty's desgin.
-* Put the date in.
+* Attack Marty's desgin. x
+1 Use color effectively x
+2 Allow clicking on Marty's Icons
+3 Use Slickgrid mini-format example to allow huge scrolling
+4 Make better fielded detail display
+5 Separate standard fields out into a separate class that includes titles.
+6 Put the date in (survive it being missing)
+7 Tie all javacript together
+8 Implement SOLR indexing.
+
+
+
 

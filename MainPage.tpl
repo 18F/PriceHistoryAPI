@@ -85,10 +85,12 @@ Search</button></submit>
             <div style="clear:both;"></div>
         </div>
 
+ <div id="detailArea"></div>
 
+<p>BeginGrid</p>
  <div id="myGrid" style="width:100%;height:500px;"></div>
+<p>EndGrid</p>
 
- <div id="detailArea">
 </div>
     <script src="../js/jquery-1.10.2.min.js"></script>
       <link rel="stylesheet" href="../SlickGrid-master/slick.grid.css" type="text/css"/>
@@ -159,6 +161,8 @@ Search</button></submit>
     </style>
 
 <script>
+
+
 var transactionData = [];
 
 function sortByColumn(col,asc) {
@@ -198,7 +202,6 @@ function sortByColumn(col,asc) {
 
 
 function processAjaxSearch(dataFromSearch) {
-
     var i = 0;
     for (var key in dataFromSearch) {
         transactionData[i++] = dataFromSearch[key];
@@ -273,12 +276,33 @@ width: 200},
         enableColumnReorder: false,
      };
 
-
+// What I really want to do here is to cycle through a palette of 16 colors.
+// There is no reason not to use whatever jqplot uses, although I don't 
+// want to become dependent on it here.
+    var standardColors = [];
+standardColors[0] =  'aqua';
+standardColors[1] =   'black';
+standardColors[2] =   'blue';
+standardColors[3] =   'fuchsia';
+standardColors[4] =   'gray';
+standardColors[5] =   'green';
+standardColors[6] =   'lime'; 
+standardColors[7] =  'maroon';
+standardColors[8] =   'navy';
+standardColors[9] =   'olive'; 
+standardColors[10] =  'orange';
+standardColors[11] =   'purple';
+standardColors[12] =   'red';
+standardColors[13] =   'silver';
+standardColors[14] =   'teal';
+standardColors[15] =   'white';
+standardColors[16] =   'yellow';
 
      var data = [];
     transactionData.forEach(function (e,i,a) {
         var obj = e;
         e["starred"] = "";
+        e.color = standardColors[i % 17];
         data[i] = obj;
     });
 
@@ -309,7 +333,7 @@ width: 200},
       html +=      '</div>';
       html +=      '<div style="clear:both;"></div>';
       html +=      '<div class="result-smallprint">';
-      html +=          '<span class="indicator red"></span>';
+      html +=          '<span class="indicator red" style="background-color:'+dataRow.color+';" ></span>';
       html +=          '<p><strong>Vendor:</strong> '+dataRow.vendor.substring(0,50)+'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Award ID/IDV:</strong> '+dataRow.awardIdIdv+ '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>PSC:</strong> '+dataRow.psc+ '</span>';
       html +=          '<a href="" class="result-more">Display Item Details <img src="theme/img/display-details.png" /></a>';
       html +=          '<div style="clear:both;"></div>';
@@ -317,26 +341,25 @@ width: 200},
       html +=      '</div>';
       return html;
  }
-   function renderDetail(dataRow) {
-      var html = "";
-      html += "<table>";
-      html += renderRow("Unit Price",dataRow.unitPrice);
-      html += renderRow("Units Ordered",dataRow.unitsOrdered);
-      html += renderRow("Product Description",dataRow.productDescription);
-      html += renderRow("Contracting Agency",dataRow.contractingAgency);
-      html += renderRow("Award ID/IDV",dataRow.awardIdIdv);
-       html += renderRow("PSC",dataRow.psc);
-      html += "</table>";
-      return html;
-  }
-    
+
+// This needs to be made into a function and called when ever the sort changes.
+function redrawDetailArea() {
+    var detailAreaDiv = document.getElementById('detailArea');
+    detailAreaDiv.innerHTML = "";
+    var smallSlice = transactionData.slice(0,Math.min(10,transactionData.length));
+    smallSlice.forEach(function (e,i,a) {
+        detailAreaDiv.innerHTML += renderStyledDetail(e);
+    });
+}
+
+redrawDetailArea();
+   
   function renderStarredTransactionsInDetailArea() {
     var div = document.getElementById('detailArea');
     div.innerHTML = "";
     data.forEach(function (e) {
         if (e.starred == "Starred") {
         div.innerHTML += renderStyledDetail(e);
-        div.innerHTML += "<p></p>";
     }
     });
   }
@@ -349,13 +372,30 @@ width: 200},
   function getLength() {
     return transactionData.length;
   }
-
-$("#dropdownWrapper").change(function(){
-      var col = $("#sortColumn").val();
-      sortByColumn(col,true);
+var clickcount = 0;
+var currentColumn = "unitPrice";
+var currentOrder = []; // 1 is ascending, -1 is descending
+$("#dropdownWrapper").click(function(){
+      if ((clickcount % 2) == 1) {
+       var col = $("#sortColumn").val();
+       if (col == currentColumn) {
+            if (col in currentOrder) {
+                 currentOrder[col] = -1*currentOrder[col];
+            } else {
+                 currentOrder[col] = 1;
+            }
+      }
+      currentColumn = col;
+      if (!(col in currentOrder)) {
+         currentOrder[col] = 1;
+      }
+      sortByColumn(col,currentOrder[col] == 1);
       grid.setData(transactionData);
       grid.invalidateAllRows();
       grid.render();
+      redrawDetailArea();
+    }
+      clickcount++;
     });
 
   $(function () {
@@ -372,6 +412,7 @@ $("#dropdownWrapper").change(function(){
       grid.setData(transactionData);
       grid.invalidateAllRows();
       grid.render();
+      redrawDetailArea();
     });
   });
 
@@ -385,7 +426,6 @@ $("#dropdownWrapper").change(function(){
         data[cell.row].starred = states[data[cell.row].starred];
         grid.updateRow(cell.row);
         e.stopPropagation();
-        renderStarredTransactionsInDetailArea();
       }
     });
 
@@ -395,15 +435,15 @@ var thingToPlot = data.forEach(function (e) {
 // we don't want to plot it if it is more than 4 times the median price, 
 // as it is probably erroneous
 
-  if (e.unitPrice < (medianUnitPrice * 4.0)) {
-
+  if ((data.length < 15) || (e.unitPrice < (medianUnitPrice * 4.0))) {
     var newArray = [];
 
     newArray[0] = i++;
     newArray[1] = Math.ceil(e.unitPrice * 100) / 100;
     newArray[2] = Math.sqrt(Math.abs(e.unitsOrdered));
     newArray[3] = {
-       label: e.vendor
+       label: e.vendor,
+       color:  e.color
     };
     plotData[0].push(newArray);
   }
