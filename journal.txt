@@ -59,6 +59,9 @@ Priorities:
 6 Put the date in (survive it being missing)
 7 Tie all javacript together
 8 Implement SOLR indexing.
+9 Move jqplot out
+10 work on getting git-hub ready.
+11 
 
 
 

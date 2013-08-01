@@ -20,13 +20,13 @@
         <div id="nav">
             <div class="inner">
                 <ul id="commodities">
-                    <li class="commodity selected"><a href="#"><img src="theme/img/icon-cpu.png" /><strong>CPU</strong></a></li>
-                    <li class="commodity"><a href="#"><img src="theme/img/icon-software.png" /><strong>Software</strong></a></li>
-                    <li class="commodity"><a href="#"><img src="theme/img/icon-supplies.png" /><strong>Supplies</strong></a></li>
-                    <li class="commodity"><a href="#"><img src="theme/img/icon-punchcards.png" /><strong>Punchcards</strong></a></li>
-                    <li class="commodity"><a href="#"><img src="theme/img/icon-configuration.png" /><strong>Configuration</strong></a></li>
-                    <li class="commodity"><a href="#"><img src="theme/img/icon-minimicro.png" /><strong>Mini-Micro</strong></a></li>
-                    <li class="commodity"><a href="#"><img src="theme/img/icon-component.png" /><strong>Component</strong></a></li>
+                    <li class="commodity" id="CPU"><a href="#"><img src="theme/img/icon-cpu.png" /><strong>CPU</strong></a></li>
+                    <li class="commodity" id="Software"><a href="#"><img src="theme/img/icon-software.png" /><strong>Software</strong></a></li>
+                    <li class="commodity" id="Supplies"><a href="#"><img src="theme/img/icon-supplies.png" /><strong>Supplies</strong></a></li>
+                    <li class="commodity" id="Punchcards"><a href="#"><img src="theme/img/icon-punchcards.png" /><strong>Punchcards</strong></a></li>
+                    <li class="commodity" id="Configuration"><a href="#"><img src="theme/img/icon-configuration.png" /><strong>Configuration</strong></a></li>
+                    <li class="commodity" id="MiniMicro"><a href="#"><img src="theme/img/icon-minimicro.png" /><strong>Mini-Micro</strong></a></li>
+                    <li class="commodity" id="Component"><a href="#"><img src="theme/img/icon-component.png" /><strong>Component</strong></a></li>
                     <div style="clear:both;"></div>
                 </ul>  
 
@@ -42,7 +42,7 @@
         <div id="search">
 	    <form action="/PricesPaid" method="post">
                 <input type="text" name="search_string" id="search_string" value="{{search_string}}" />
-		<input type="text" name="psc_pattern" value="{{psc_pattern}}">
+<!--		<input type="text" name="psc_pattern" value="{{psc_pattern}}"> -->
 		<input type="hidden" name="user" value="contractofficer" />
 		<input type="hidden" name="password" value="savegovmoney" />
                 <button type="submit" name="submit" id="submit">
@@ -53,7 +53,7 @@ Search</button></submit>
         </div>
 
 <span class="majorlabel">You Searched for: {{search_string}}</span>
-<span class="majorlabel">PSC Pattern: {{psc_pattern}}</span>
+<!-- <span class="majorlabel">PSC Pattern: {{psc_pattern}}</span> -->
 
   
 <div id="chartContainer">
@@ -162,6 +162,40 @@ Search</button></submit>
 
 <script>
 
+$('#commodities li').first().addClass("selected");
+var currentlySelectedCommodityElement  = $('#CPU');
+
+var grid;
+
+var standardCommodities = {
+// CPU seems to requie both 7020 and 7025!  This 
+// is why commoditype could end up being a problem for us!
+CPU: '702',
+Software: 7030,
+Supplies: 7045,
+Punchcards: 7040,
+// Not sure this is correct for Configuration....
+Configuration: 7010,
+MiniMicro: 7042,
+Component: 7050
+};
+
+$('#commodities li').click(function () {
+       $('#'+currentlySelectedCommodityElement.attr('id')).removeClass("selected");
+       currentlySelectedCommodityElement = $('#'+this.id);
+       $('#'+this.id).addClass("selected");
+// Now we will call the search API with a different PSC code
+
+var standard = standardCommodities[currentlySelectedCommodityElement.attr('id')];
+   $.post("api",
+      { search_string: '{{search_string}}',
+        user: '{{user}}',
+        password: '{{password}}',
+        psc_pattern: standard
+      },
+      processAjaxSearch
+   );
+});
 
 var transactionData = [];
 
@@ -202,6 +236,7 @@ function sortByColumn(col,asc) {
 
 
 function processAjaxSearch(dataFromSearch) {
+    transactionData = [];
     var i = 0;
     for (var key in dataFromSearch) {
         transactionData[i++] = dataFromSearch[key];
@@ -248,7 +283,6 @@ return (parseFloat(values[half-1]["unitPrice"]) +
 
 var medianUnitPrice = medianSortedValues(transactionData);
 
-    var grid;
     var transactionColumns = [
         {id: "unitPrice", name: "Unit Price", field: "unitPrice", width: 100},
         {id: "unitsOrdered", name: "Units Ordered", field: "unitsOrdered", width: 60},
@@ -399,6 +433,7 @@ $("#dropdownWrapper").click(function(){
     });
 
   $(function () {
+    $('#myGrid').innerHTML = "";
     grid = new Slick.Grid("#myGrid", transactionData, columns, options);
 
 // There's got to be a way to make this more compact!!!
@@ -448,6 +483,8 @@ var thingToPlot = data.forEach(function (e) {
     plotData[0].push(newArray);
   }
 });
+
+ $('#chartdiv').empty();
 
  var plot1b = $.jqplot('chartdiv', plotData, {
       title: 'Unit Prices',
@@ -517,11 +554,12 @@ var thingToPlot = data.forEach(function (e) {
       });
 }
 
+
 $.post("api",
   { search_string: '{{search_string}}',
     user: '{{user}}',
     password: '{{password}}',
-    psc_pattern: '{{psc_pattern}}'
+    psc_pattern: standardCommodities[currentlySelectedCommodityElement.attr('id')]
   },
   processAjaxSearch
 );
