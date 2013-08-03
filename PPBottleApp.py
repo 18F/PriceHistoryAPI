@@ -6,12 +6,13 @@ from ppconfig import MasterPassword,MasterUsername
 
 # Hopefully this will work!
 PathToBottleWebApp = "./"
+PathToExternalFiles = "../"
 PathToDataFilesOnRobsMachine = "../cookedData"
 
-PathToJSFiles=PathToBottleWebApp+"js/"
-PathToCSSFiles=PathToBottleWebApp+"css/"
+PathToJSFiles=PathToExternalFiles+"js/"
+PathToCSSFiles=PathToExternalFiles+"css/"
 PathToJSPlugins=PathToJSFiles + "plugins/"
-PathToSlickGridMaster=PathToBottleWebApp+"/SlickGrid-master/"
+PathToSlickGridMaster=PathToExternalFiles+"/SlickGrid-master/"
 
 app = Bottle()
 

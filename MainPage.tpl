@@ -11,7 +11,7 @@
     <div id="header">
         <!-- Top part of header -->
         <div class="inner">
-            <h1 id="pricespaid_logo"><img src="theme/img/logo_pricespaid.png" alt="PricesPaid" /></h1>
+            <p id="pricespaid_logo"><img src="theme/img/logo_pricespaid.png" alt="PricesPaid" /></p>
             <span id="gsa_logo">Powered by <img src="theme/img/gsa_logo.png" alt="GSA" /></span>
             <div style="clear:both;"></div>
         </div>
@@ -40,22 +40,23 @@
     <div id="content" class="inner">
         <!-- Start search -->
         <div id="search">
-	    <form action="/PricesPaid" method="post">
+	    <form action="/PricesPaid" method="post" id="searchform">
                 <input type="text" name="search_string" id="search_string" value="{{search_string}}" />
 <!--		<input type="text" name="psc_pattern" value="{{psc_pattern}}"> -->
 		<input type="hidden" name="user" value="contractofficer" />
 		<input type="hidden" name="password" value="savegovmoney" />
-                <button type="submit" name="submit" id="submit">
-<!-- Need to replace this icon here
-<img src="theme/img/search_icon.png" /> -->
-Search</button></submit>
+<button id="search_button" type="submit" style="border:none; background-color:transparent;">
+<img src="theme/img/search_icon.png" onclick="document.searchform.submit();"/>
+</button>
             </form>
         </div>
 
 <span class="majorlabel">You Searched for: {{search_string}}</span>
 <!-- <span class="majorlabel">PSC Pattern: {{psc_pattern}}</span> -->
+<div class="hideShowToggle">
+<button id="hideShowGraph" >Hide/Show Graph</button>  
+</div>
 
-  
 <div id="chartContainer">
     <section id="chartdiv" ></section>
     <section id="legenddiv" >
@@ -84,12 +85,18 @@ Search</button></submit>
             </form>
             <div style="clear:both;"></div>
         </div>
-
+<p></p>
+<div class="hideShowToggle">
+<button id="hideShowDetails">Hide/Show Details</button>
+</div>
  <div id="detailArea"></div>
 
-<p>BeginGrid</p>
+<div class="hideShowToggle">
+<button id="hideShowGrid">Hide/Show Grid</button>
+</div>
+
  <div id="myGrid" style="width:100%;height:500px;"></div>
-<p>EndGrid</p>
+<p></p>
 
 </div>
     <script src="../js/jquery-1.10.2.min.js"></script>
@@ -149,7 +156,7 @@ Search</button></submit>
         overflow: auto;
         height: 250px;
      }
-     #legendtable {p
+     #legendtable {
         font-size: 12px;
         border: 1px solid #cdcdcd;
         border-collapse: collapse;
@@ -161,9 +168,42 @@ Search</button></submit>
     </style>
 
 <script>
+$("#hideShowGrid").click(function() { 
+    $("#myGrid").toggle();
+});
+
+$("#hideShowDetails").click(function() { 
+    $("#detailArea").toggle();
+});
+
+$("#hideShowGraph").click(function() { 
+    $("#chartContainer").toggle();
+});
+
 
 $('#commodities li').first().addClass("selected");
 var currentlySelectedCommodityElement  = $('#CPU');
+
+
+   function renderDetailArea(dataRow,i) {
+      var html = "";
+      html +=      ' <div  class="itemDetails" id="itemDetails'+i+'">';
+      html +=      dataRow.productDescription;
+      html +=      '</div>';
+      return html;
+   }
+
+
+function detailItemHandler(e) {
+  var num = "itemDetails".length;
+  var id = $(this).attr('id').substring(num);
+  var expandableSection = $("#expandArea"+id);
+  if (expandableSection.html().length != 0) {
+    expandableSection.empty();
+  } else {
+    expandableSection.append(renderDetailArea(transactionData[id],id));
+  }
+}
 
 var grid;
 
@@ -356,7 +396,15 @@ standardColors[16] =   'yellow';
 // These strings really need to transferred to the server
 // In order for us to have proper abstraction and language translation    
 
-   function renderStyledDetail(dataRow) {
+   function renderDetailArea(dataRow,i) {
+      var html = "";
+      html +=      ' <div  class="itemDetails" id="detailArea'+i+'">';
+      html +=      dataRow.productDescription;
+      html +=      '</div>';
+      return html;
+   }
+
+   function renderStyledDetail(dataRow,i) {
       var html = "";
       html +=      ' <div class="result">';
       html +=      '<img src="http://placehold.it/120x120" class="result-image" />';
@@ -369,26 +417,33 @@ standardColors[16] =   'yellow';
       html +=      '<div class="result-smallprint">';
       html +=          '<span class="indicator red" style="background-color:'+dataRow.color+';" ></span>';
       html +=          '<p><strong>Vendor:</strong> '+dataRow.vendor.substring(0,50)+'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Award ID/IDV:</strong> '+dataRow.awardIdIdv+ '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>PSC:</strong> '+dataRow.psc+ '</span>';
-      html +=          '<a href="" class="result-more">Display Item Details <img src="theme/img/display-details.png" /></a>';
+      var itemDetails = "itemDetails"+i;
+      var expandArea = "expandArea"+i;
+      html +=          '<section class="result-more">Display Item Details  <img id="'+itemDetails+'" src="theme/img/display-details.png" /><span id="'+expandArea+'"></span></section>';
       html +=          '<div style="clear:both;"></div>';
       html +=      '</div>';
       html +=      '</div>';
       return html;
  }
 
+
 // This needs to be made into a function and called when ever the sort changes.
 function redrawDetailArea() {
-    var detailAreaDiv = document.getElementById('detailArea');
-    detailAreaDiv.innerHTML = "";
+    var detailAreaDiv = $("#"+'detailArea');
+    detailAreaDiv.empty();
     var smallSlice = transactionData.slice(0,Math.min(10,transactionData.length));
     smallSlice.forEach(function (e,i,a) {
-        detailAreaDiv.innerHTML += renderStyledDetail(e);
+        detailAreaDiv.append(renderStyledDetail(e,i));
     });
 }
 
 redrawDetailArea();
-   
-  function renderStarredTransactionsInDetailArea() {
+
+// This is necessary if you are doing live construction,
+// I don't know why.
+$(document).on( "click", "[id*=itemDetails]", detailItemHandler );
+
+function renderStarredTransactionsInDetailArea() {
     var div = document.getElementById('detailArea');
     div.innerHTML = "";
     data.forEach(function (e) {
@@ -401,7 +456,6 @@ redrawDetailArea();
   // Define function used to get the data and sort it.
   function getItem(index) {
     return transactionData[index];
-//    return isAsc ? data[indices[currentSortCol.id][index]] : data[indices[currentSortCol.id][(data.length - 1) - index]];
   }
   function getLength() {
     return transactionData.length;

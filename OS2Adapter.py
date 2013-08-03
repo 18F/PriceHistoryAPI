@@ -11,6 +11,10 @@ hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 
 logger.setLevel(logging.WARNING)
 
+# Note: Josh Royko said all of this AwardIdIdv is or a particular GSA schedule
+# Note: Highest priority is remove redundancy with FedBidAdapater,
+# create "Standard Fields" adapter and "Custom Fields" adapter separately.
+
 def getDictionaryFromOS2(raw):
     return { \
     UNITS : replaceUndumpableData(raw.data[16]), \
