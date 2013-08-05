@@ -18,7 +18,7 @@ hdlr = logging.FileHandler('/var/tmp/PricesPaidTrans.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 
-logger.setLevel(logging.WARNING)
+logger.setLevel(logging.INFO)
 
 
 # This is a little dangerous.
@@ -70,9 +70,8 @@ def loadDirectory(dirpath,pattern):
                 logger.error('Unknown version')
                 raise Exception('Unknown Format Version')
 
-            logger.info('Number Transactions Read From Directory' \
-                  +str(len(transactions)))
-
+    logger.info('Total Number Transactions Read From Directory' \
+        +str(len(transactions)))
     return transactions
 
 # mod_wsgi pipe output to the error log.  The Bottle webserver doesn't,
@@ -94,30 +93,46 @@ def searchApi(pathToData,search_string,psc_pattern):
             # but this should work
             globalTransactionDir.transactions = loadDirectory(pathToData,None)
             numRows = len(globalTransactionDir.transactions)
-            print "Time To Load ALL Data: " +str(time.clock()-t0)
+            timeToLoadAll = "Time To Load ALL Data: " +str(time.clock()-t0)
+            print timeToLoadAll
+            logger.error(timeToLoadAll)
+            logger.error("Num Rows in globalTransaction "+str(numRows))        
         else:
             print "Using Cached globalTransactionDir"
         tsearch = time.clock()
+        logger.error("Searching for search_string,psc" + search_string+","+psc_pattern)
         transactions = globalTransactionDir.findAllMatching(search_string,\
                                                             psc_pattern)
-        print "Time To Search ALL Data for "+search_string + ": " +\
+        timeToSearch = "Time To Search ALL Data for "+search_string + ": " +\
           str(time.clock()-tsearch)
+        print timeToSearch
+        logger.error(timeToSearch)        
     else:
         # this code is without caching
         print "Not using cache."
+        logger.error("Not using cache.")        
         localTransactionDir = Transaction.TransactionDirector()        
         t1 = time.clock()
 
+        logger.error("Searching for search_string,psc" + search_string+","+psc)        
         globalTransactionDir.transactions = \
           loadDirectory(pathToData,search_string,psc_pattern)
         numRows = len(globalTransactionDir.transactions)
-        print "Time To Load Data for "+search_string + ": " +str(time.clock()-t1)
+        timeToLoad = "Time To Load Data for "+search_string + ": " +str(time.clock()-t1)
+        logger.error(timeToLoad)
+        print timeToLoad
         transactions = localTransactionDir.transactions
         
-    print "Total Number of Transactions in Dataset: "+str(len(transactions))
-    
+    totalNumber = "Total Number of Transactions in Dataset: "+str(len(transactions))
+    print totalNumber
+    logger.error(totalNumber)
+        
     transactions = [tr.dict for tr in transactions[0:LIMIT_NUM_RETURNED_TRANSACTIONS]]
-    print "Second Total Number of Transactions in Dataset: "+str(len(transactions))
+    secondTotal = "Second Total Number of Transactions in Dataset: "+str(len(transactions))
+    print secondTotal
+    logger.error(secondTotal)    
     transactionDict = dict(zip(range(0, len(transactions)),transactions))
-    print "Time To Return from SearchApi: " +str(time.clock()-timeSearchBegin)
+    timeToReturn =  "Time To Return from SearchApi: " +str(time.clock()-timeSearchBegin)
+    print timeToReturn
+    logger.error(timeToReturn)    
     return transactionDict

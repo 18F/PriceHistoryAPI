@@ -18,10 +18,13 @@ AGENCY = "contractingAgency"
 VENDOR = "vendor"
 PSC = "psc"
 DESCR = "productDescription"
+LONGDESCR = "longDescription"
 DATE = "orderDate"
+AWARDIDIDV = "awardIdIdv"
 
 def parseFormatVersion(filename):
     match = re.search(r"(\w+)-pppifver-(\w+)-(\d+)-(\d+)-(\d+)-(\d+)-(\d+).csv",filename)
+
     if not match:
         return None
     else:
@@ -100,6 +103,7 @@ class TransactionDirector:
             matchesPSC = False
             if ((psc_pattern is None) or re.search(psc_pattern, tr.dict[PSC]) is not None):
                 matchesPSC = True
+            logger.error("matchs PSC, matchesGeneral"+str(matchesPSC)+"."+str(matchesGeneral)+"|"+tr.dict[PSC])
             if (matchesPSC and matchesGeneral):
                 matches.append(tr)
         return matches

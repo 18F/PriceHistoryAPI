@@ -1,6 +1,6 @@
 import csv
 from Transaction import RawTransaction,BasicTransaction,replaceUndumpableData,UNITS, \
-     PRICE,AGENCY,VENDOR,PSC,DESCR,DATE
+     PRICE,AGENCY,VENDOR,PSC,DESCR,DATE,LONGDESCR
 
      
 import logging
@@ -26,6 +26,9 @@ def getDictionaryFromOS2(raw):
     PSC : replaceUndumpableData('7510'),  \
     DESCR : replaceUndumpableData(raw.data[5]),   \
     DATE : replaceUndumpableData(raw.data[1]), \
+# I need to check this---Josh Royko told me in an email, but I don't really
+# remember what he said
+    AWARDIDIDV : replaceUndumpableData("GS Schedule-75"), \
 # here begin some less-standard fields
 # This data has significantly more fields--I am simply
 # selecting the most salient.  I think the reality is this sort

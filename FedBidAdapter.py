@@ -1,31 +1,50 @@
 import csv
 from Transaction import RawTransaction,BasicTransaction,replaceUndumpableData,UNITS, \
-     PRICE,AGENCY,VENDOR,PSC,DESCR,DATE
+     PRICE,AGENCY,VENDOR,PSC,DESCR,DATE,LONGDESCR,AWARDIDIDV
+import datetime
+import calendar
 
 import logging
+
 logger = logging.getLogger('PricesPaidTrans')
 hdlr = logging.FileHandler('/var/tmp/PricesPaidTrans.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 
-logger.setLevel(logging.WARNING)
+logger.setLevel(logging.INFO)
 
+monthLookup = {v.upper(): k for k,v in enumerate(calendar.month_abbr)}
+# This are magic numbers that are simply based on the FedBid files
+# as Laura presented them to me.
+def findMonthFromAbbrev(a):
+    try:
+       m = monthLookup[a]
+       return m
+    except Error as e:
+       logger.error('Caught error '+repr(e) + a)
+       return 0
 
+    # Need to test this month lookup stuff, right now
+    # it is untested.
 def getDictionaryFromFedBid(raw):
-    return { \
-    UNITS : replaceUndumpableData(raw.data[7]) , \
-    PRICE : replaceUndumpableData(raw.data[8]), \
-    AGENCY : replaceUndumpableData(raw.data[0]) , \
-    VENDOR : replaceUndumpableData(raw.data[2]) , \
-    PSC : replaceUndumpableData(raw.data[4]) ,  \
-    DESCR : replaceUndumpableData(raw.data[5]+'  Additional Info:'+raw.data[6]),   \
-# The FedBid data doesn't have dates. 
-    DATE : "",   \
-# here begin some less-standard fields
-    "commodityType" : replaceUndumpableData(raw.data[3]) , \
-    "awardIdIdv" : replaceUndumpableData(raw.data[1]) \
-    }
-
+    try:
+        d = datetime.date(int(raw.data[4].strip(' \t\n\r')),findMonthFromAbbrev(raw.data[5]),1)
+        return { \
+           UNITS : replaceUndumpableData(raw.data[37]) , \
+           PRICE : replaceUndumpableData(raw.data[38]), \
+           AGENCY : replaceUndumpableData(raw.data[3]) , \
+           VENDOR : replaceUndumpableData(raw.data[29]) , \
+           PSC : replaceUndumpableData(raw.data[13]) ,  \
+           DESCR : replaceUndumpableData(raw.data[24]),   \
+           LONGDESCR : replaceUndumpableData(raw.data[35]) , \
+    # This needs to be put in a standard format and sorted properly.
+           DATE : replaceUndumpableData(d.isoformat()), \
+    # here begin some less-standard fields
+           AWARDIDIDV : replaceUndumpableData(raw.data[19]) \
+          }
+    except:
+        logger.error("don't know what went wrong here")
+        return {}
 
 # I think this will be better made into a pure function and
 # perhaps actually separated into particular formats (to
@@ -42,23 +61,23 @@ def loadFedBidFromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIO
             for row in reader:
                 tr = RawTransaction("spud")
                 tr.data = row;
-                bt = BasicTransaction(adapter,tr)
-                if (pattern):
-                    result = re.search(pattern, bt.getSearchMemento())
-                else:
-                    result = True
-# we skip the first record, this is for FedBid, needs to be
-# adapter specific
                 if (notFoundFirstRecord):
                     result = False
                     notFoundFirstRecord = False;
+                else:
+                    bt = BasicTransaction(adapter,tr)
+                    if (pattern):
+                        result = re.search(pattern, bt.getSearchMemento())
+                    else:
+                        result = True
                 if (result):
-                    if (bt.isValidTransaction()):
-                        transactions.append(bt)
-                        i = i + 1
-
+                     if (bt.isValidTransaction()):
+                         transactions.append(bt)
+                         i = i + 1
                 if (i+n) > LIMIT_NUM_MATCHING_TRANSACTIONS:
                     break
+        logger.error('number returned:'+str(i))
         return transactions                
     except IOError as e:
-        print "I/O error({0}): {1}".format(e.errno, e.strerror)
+         logger.error("I/O error({0}): {1}".format(e.errno, e.strerror))
+         print "I/O error({0}): {1}".format(e.errno, e.strerror)
