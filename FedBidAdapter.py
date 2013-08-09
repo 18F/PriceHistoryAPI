@@ -4,6 +4,7 @@ from Transaction import RawTransaction,BasicTransaction,replaceUndumpableData,UN
 import datetime
 import calendar
 
+import sys, traceback
 import logging
 
 logger = logging.getLogger('PricesPaidTrans')
@@ -11,16 +12,20 @@ hdlr = logging.FileHandler('/var/tmp/PricesPaidTrans.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.ERROR)
 
-monthLookup = {v.upper(): k for k,v in enumerate(calendar.month_abbr)}
+
+# This works in 2.7, which I don't have on the AWS instance yet!
+# monthLookup = {v.upper(): k for k,v in enumerate(calendar.month_abbr)}
+monthLookup = dict((v.upper(),k) for k,v in enumerate(calendar.month_abbr))
 # This are magic numbers that are simply based on the FedBid files
 # as Laura presented them to me.
 def findMonthFromAbbrev(a):
+    global monthLookup
     try:
        m = monthLookup[a]
        return m
-    except Error as e:
+    except KeyError as e:
        logger.error('Caught error '+repr(e) + a)
        return 0
 
@@ -28,7 +33,7 @@ def findMonthFromAbbrev(a):
     # it is untested.
 def getDictionaryFromFedBid(raw):
     try:
-        d = datetime.date(int(raw.data[4].strip(' \t\n\r')),findMonthFromAbbrev(raw.data[5]),1)
+        d = datetime.date(int(raw.data[4].strip(' \t\n\r').upper()),findMonthFromAbbrev(raw.data[5]),1)
         return { \
            UNITS : replaceUndumpableData(raw.data[37]) , \
            PRICE : replaceUndumpableData(raw.data[38]), \
@@ -43,6 +48,9 @@ def getDictionaryFromFedBid(raw):
            AWARDIDIDV : replaceUndumpableData(raw.data[19]) \
           }
     except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        traceback.print_exception(exc_type, exc_value, exc_traceback,
+                              limit=2, file=sys.stderr)      
         logger.error("don't know what went wrong here")
         return {}
 
@@ -76,8 +84,13 @@ def loadFedBidFromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIO
                          i = i + 1
                 if (i+n) > LIMIT_NUM_MATCHING_TRANSACTIONS:
                     break
-        logger.error('number returned:'+str(i))
+        logger.info('number returned:'+str(i))
         return transactions                
     except IOError as e:
          logger.error("I/O error({0}): {1}".format(e.errno, e.strerror))
          print "I/O error({0}): {1}".format(e.errno, e.strerror)
+    except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        traceback.print_exception(exc_type, exc_value, exc_traceback,
+                              limit=2, file=sys.stderr)      
+        logger.error("don't know what went wrong here")

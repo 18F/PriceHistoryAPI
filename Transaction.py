@@ -9,7 +9,7 @@ hdlr = logging.FileHandler('/var/tmp/PricesPaidTrans.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 
-logger.setLevel(logging.WARNING)
+logger.setLevel(logging.ERROR)
 
 # These are fields that are more or less "standard"        
 UNITS = "unitsOrdered"
@@ -103,7 +103,7 @@ class TransactionDirector:
             matchesPSC = False
             if ((psc_pattern is None) or re.search(psc_pattern, tr.dict[PSC]) is not None):
                 matchesPSC = True
-            logger.error("matchs PSC, matchesGeneral"+str(matchesPSC)+"."+str(matchesGeneral)+"|"+tr.dict[PSC])
+            logger.info("matchs PSC, matchesGeneral"+str(matchesPSC)+"."+str(matchesGeneral)+"|"+tr.dict[PSC])
             if (matchesPSC and matchesGeneral):
                 matches.append(tr)
         return matches

@@ -18,7 +18,7 @@ hdlr = logging.FileHandler('/var/tmp/PricesPaidTrans.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.ERROR)
 
 
 # This is a little dangerous.
@@ -57,7 +57,7 @@ def loadDirectory(dirpath,pattern):
             # FedBid data has number 1
             # This would be better with a functional "cond" type operator
             adapter = None
-            logger.error('version:'+version)
+            logger.info('version:'+version)
             if (version == '1'):
                 adapter = getDictionaryFromFedBid
                 transactions.extend(loadFedBidFromCSVFile(dirpath+"/"+filename,\
@@ -95,44 +95,44 @@ def searchApi(pathToData,search_string,psc_pattern):
             numRows = len(globalTransactionDir.transactions)
             timeToLoadAll = "Time To Load ALL Data: " +str(time.clock()-t0)
             print timeToLoadAll
-            logger.error(timeToLoadAll)
-            logger.error("Num Rows in globalTransaction "+str(numRows))        
+            logger.info(timeToLoadAll)
+            logger.info("Num Rows in globalTransaction "+str(numRows))        
         else:
             print "Using Cached globalTransactionDir"
         tsearch = time.clock()
-        logger.error("Searching for search_string,psc" + search_string+","+psc_pattern)
+        logger.info("Searching for search_string,psc" + search_string+","+psc_pattern)
         transactions = globalTransactionDir.findAllMatching(search_string,\
                                                             psc_pattern)
         timeToSearch = "Time To Search ALL Data for "+search_string + ": " +\
           str(time.clock()-tsearch)
         print timeToSearch
-        logger.error(timeToSearch)        
+        logger.info(timeToSearch)        
     else:
         # this code is without caching
         print "Not using cache."
-        logger.error("Not using cache.")        
+        logger.info("Not using cache.")        
         localTransactionDir = Transaction.TransactionDirector()        
         t1 = time.clock()
 
-        logger.error("Searching for search_string,psc" + search_string+","+psc)        
+        logger.info("Searching for search_string,psc" + search_string+","+psc)        
         globalTransactionDir.transactions = \
           loadDirectory(pathToData,search_string,psc_pattern)
         numRows = len(globalTransactionDir.transactions)
         timeToLoad = "Time To Load Data for "+search_string + ": " +str(time.clock()-t1)
-        logger.error(timeToLoad)
+        logger.info(timeToLoad)
         print timeToLoad
         transactions = localTransactionDir.transactions
         
     totalNumber = "Total Number of Transactions in Dataset: "+str(len(transactions))
     print totalNumber
-    logger.error(totalNumber)
+    logger.info(totalNumber)
         
     transactions = [tr.dict for tr in transactions[0:LIMIT_NUM_RETURNED_TRANSACTIONS]]
     secondTotal = "Second Total Number of Transactions in Dataset: "+str(len(transactions))
     print secondTotal
-    logger.error(secondTotal)    
+    logger.info(secondTotal)    
     transactionDict = dict(zip(range(0, len(transactions)),transactions))
     timeToReturn =  "Time To Return from SearchApi: " +str(time.clock()-timeSearchBegin)
     print timeToReturn
-    logger.error(timeToReturn)    
+    logger.info(timeToReturn)    
     return transactionDict

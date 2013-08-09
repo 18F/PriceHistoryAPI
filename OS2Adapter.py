@@ -1,6 +1,6 @@
 import csv
 from Transaction import RawTransaction,BasicTransaction,replaceUndumpableData,UNITS, \
-     PRICE,AGENCY,VENDOR,PSC,DESCR,DATE,LONGDESCR
+     PRICE,AGENCY,VENDOR,PSC,DESCR,DATE,LONGDESCR,AWARDIDIDV
 
      
 import logging
@@ -9,7 +9,7 @@ hdlr = logging.FileHandler('/var/tmp/PricesPaidTrans.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 
-logger.setLevel(logging.WARNING)
+logger.setLevel(logging.ERROR)
 
 # Note: Josh Royko said all of this AwardIdIdv is or a particular GSA schedule
 # Note: Highest priority is remove redundancy with FedBidAdapater,
@@ -25,10 +25,13 @@ def getDictionaryFromOS2(raw):
 # but it matches
     PSC : replaceUndumpableData('7510'),  \
     DESCR : replaceUndumpableData(raw.data[5]),   \
+    # DANGER!  HACK!
+    # I think the OS2 data has a better version than this!
+    LONGDESCR : replaceUndumpableData(raw.data[5]),   \
     DATE : replaceUndumpableData(raw.data[1]), \
 # I need to check this---Josh Royko told me in an email, but I don't really
 # remember what he said
-    AWARDIDIDV : replaceUndumpableData("GS Schedule-75"), \
+    AWARDIDIDV : replaceUndumpableData("GS Schedule-75 (maybe)"), \
 # here begin some less-standard fields
 # This data has significantly more fields--I am simply
 # selecting the most salient.  I think the reality is this sort
