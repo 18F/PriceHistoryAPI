@@ -36,7 +36,7 @@ def getDictionaryFromOS2(raw):
 # This data has significantly more fields--I am simply
 # selecting the most salient.  I think the reality is this sort
 # of analysis should be done in a crowd-source, "datapalooza" type approach.
-    "ID" : replaceUndumpableData(raw.data[0]), \
+    "contractNumber" : replaceUndumpableData(raw.data[0]), \
     "Revised Ord_date" : replaceUndumpableData(raw.data[1]), \
     "Report Month" : replaceUndumpableData(raw.data[3]),   \
     "Ord_num" : replaceUndumpableData(raw.data[4]),   \

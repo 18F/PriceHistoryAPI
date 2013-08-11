@@ -12,6 +12,8 @@ from os import listdir
 from os.path import isfile, join
 import re
 
+import solr
+
 import logging
 logger = logging.getLogger('PricesPaidTrans')
 hdlr = logging.FileHandler('/var/tmp/PricesPaidTrans.log')
@@ -42,8 +44,12 @@ LIMIT_NUM_RETURNED_TRANSACTIONS = 5000
 # This is a significatn limit on the number of records returned.
 LIMIT_NUM_MATCHING_TRANSACTIONS = 5000*1000
 
+# Note: Eventually, we need to do some sort of auto-loading to get this to work.
+VERSION_ADAPTER_MAP = { '1': [loadFedBidFromCSVFile,getDictionaryFromFedBid],
+                        '2': [loadOS2FromCSVFile,getDictionaryFromOS2] }
 
-def loadDirectory(dirpath,pattern):
+# This routine needs to become the basis of the SolrLodr...
+def loadDirectory(dirpath,pattern,version_adapter_map = VERSION_ADAPTER_MAP):
     onlyfiles = [ f for f in listdir(dirpath) if isfile(join(dirpath,f)) ]
     transactions = []
     onlycsvfiles = [ f for f in onlyfiles if re.search(".csv$",f)]
@@ -58,13 +64,11 @@ def loadDirectory(dirpath,pattern):
             # This would be better with a functional "cond" type operator
             adapter = None
             logger.info('version:'+version)
-            if (version == '1'):
-                adapter = getDictionaryFromFedBid
-                transactions.extend(loadFedBidFromCSVFile(dirpath+"/"+filename,\
-                     pattern, adapter,LIMIT_NUM_MATCHING_TRANSACTIONS))
-            elif (version == '2'):
-                adapter = getDictionaryFromOS2
-                transactions.extend(loadOS2FromCSVFile(dirpath+"/"+filename,\
+            if (version in version_adapter_map):
+                v = version_adapter_map[version]
+                loader = v[0]
+                adapter = v[1]
+                transactions.extend(loader(dirpath+"/"+filename,\
                      pattern, adapter,LIMIT_NUM_MATCHING_TRANSACTIONS))
             else:
                 logger.error('Unknown version')
@@ -136,3 +140,57 @@ def searchApi(pathToData,search_string,psc_pattern):
     print timeToReturn
     logger.info(timeToReturn)    
     return transactionDict
+
+
+
+def searchApiSolr(pathToData,search_string,psc_pattern):
+# create a connection to a solr server
+# This needs to come from ppconfig
+    solrCon = solr.SolrConnection('http://localhost:8983/solr')
+    localTransactionDir = None
+    
+    timeSearchBegin = time.clock()
+
+    transaction = None
+
+    print "Not using cache."
+    logger.info("Not using cache.")        
+    localTransactionDir = Transaction.TransactionDirector()        
+    t1 = time.clock()
+
+    logger.info("Searching for search_string,psc" + search_string+","+psc_pattern)
+    
+    # do a search
+    mainSearch = Transaction.LONGDESCR+':'+search_string
+    pscSearch = Transaction.PSC+':'+psc_pattern
+
+    # the magic happens here...
+    transactionDicts = solrCon.query(mainSearch + ' '+ pscSearch,rows=100)
+
+    
+    for hit in transactionDicts.results:
+        print hit[Transaction.LONGDESCR]
+    print repr(transactionDicts.results)
+
+    transactionDicts = transactionDicts.results
+    numRows = len(transactionDicts)
+    timeToLoad = "Time To Load Data for "+search_string + ": " +str(time.clock()-t1)
+    logger.info(timeToLoad)
+    print timeToLoad
+
+
+    
+    totalNumber = "Total Number of Transactions in Dataset: "+str(len(transactionDicts))
+    print totalNumber
+    logger.info(totalNumber)
+        
+    transactionDicts = transactionDicts[0:LIMIT_NUM_RETURNED_TRANSACTIONS]
+    
+    secondTotal = "Second Total Number of Transactions in Dataset: "+str(len(transactionDicts))
+    print secondTotal
+    logger.info(secondTotal)    
+    numberedTransactionDict = dict(zip(range(0, len(transactionDicts)),transactionDicts))
+    timeToReturn =  "Time To Return from SearchApi: " +str(time.clock()-timeSearchBegin)
+    print timeToReturn
+    logger.info(timeToReturn)    
+    return numberedTransactionDict

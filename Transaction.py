@@ -22,6 +22,8 @@ LONGDESCR = "longDescription"
 DATE = "orderDate"
 AWARDIDIDV = "awardIdIdv"
 
+STANDARD_FIELDS = [UNITS,PRICE,AGENCY,VENDOR,PSC,DESCR,LONGDESCR,DATE,AWARDIDIDV]
+
 def parseFormatVersion(filename):
     match = re.search(r"(\w+)-pppifver-(\w+)-(\d+)-(\d+)-(\d+)-(\d+)-(\d+).csv",filename)
 
