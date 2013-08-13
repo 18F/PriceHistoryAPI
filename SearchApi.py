@@ -165,8 +165,7 @@ def searchApiSolr(pathToData,search_string,psc_pattern):
     pscSearch = Transaction.PSC+':'+psc_pattern
 
     # the magic happens here...
-    transactionDicts = solrCon.query(mainSearch + ' '+ pscSearch,rows=100)
-
+    transactionDicts = solrCon.query(mainSearch,rows=LIMIT_NUM_MATCHING_TRANSACTIONS,fq=pscSearch)
     
     for hit in transactionDicts.results:
         print hit[Transaction.LONGDESCR]
