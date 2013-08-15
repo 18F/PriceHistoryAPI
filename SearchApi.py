@@ -1,5 +1,6 @@
 import Transaction
 import time
+from decimal import *
 
 # Note: For now, these are explict imports.
 # Evntually, we want to make this automatic, and essentially
@@ -165,11 +166,11 @@ def searchApiSolr(pathToData,search_string,psc_pattern):
     pscSearch = Transaction.PSC+':'+psc_pattern
 
     # the magic happens here...
-    transactionDicts = solrCon.query(mainSearch,rows=LIMIT_NUM_MATCHING_TRANSACTIONS,fq=pscSearch)
-    
+    # you can add q_op='AND' here, but it seems to shut down all instances.  I'm afraid
+    # I either need to use ediscmax or do something else.
+    transactionDicts = solrCon.query(mainSearch,rows=LIMIT_NUM_MATCHING_TRANSACTIONS,fq=pscSearch,fl='*,score',deftype='edismax')
     for hit in transactionDicts.results:
-        print hit[Transaction.LONGDESCR]
-    print repr(transactionDicts.results)
+        hit['score'] = int(Decimal(hit['score']*100).quantize(Decimal('1'), rounding=ROUND_UP))
 
     transactionDicts = transactionDicts.results
     numRows = len(transactionDicts)
