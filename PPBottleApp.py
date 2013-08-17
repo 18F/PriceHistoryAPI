@@ -1,3 +1,5 @@
+# This should actually be renamed so that it is not confused
+# with the file of the same name in PricesPaidGUI
 from bottle import Bottle, run, template,request,TEMPLATE_PATH,static_file
 
 from SearchApi import searchApi,searchApiSolr
@@ -29,6 +31,7 @@ def apisolr():
     search_string = request.forms.get('search_string')
     psc_pattern = request.forms.get('psc_pattern')
     print "APISOLR search_string" + search_string
+    print "PSCSOLR search_string" + psc_pattern
     return searchApiSolr(PathToDataFiles,search_string,psc_pattern)
 
 
