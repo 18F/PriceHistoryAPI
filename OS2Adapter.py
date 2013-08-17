@@ -29,9 +29,7 @@ def getDictionaryFromOS2(raw):
     # I think the OS2 data has a better version than this!
     LONGDESCR : replaceUndumpableData(raw.data[5]),   \
     DATE : replaceUndumpableData(raw.data[1]), \
-# I need to check this---Josh Royko told me in an email, but I don't really
-# remember what he said
-    AWARDIDIDV : replaceUndumpableData("GS Schedule-75 (maybe)"), \
+    AWARDIDIDV : replaceUndumpableData("GSA Schedule-75"), \
 # here begin some less-standard fields
 # This data has significantly more fields--I am simply
 # selecting the most salient.  I think the reality is this sort

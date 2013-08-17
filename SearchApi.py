@@ -43,7 +43,7 @@ turnOnGlobalCache = True
 LIMIT_NUM_RETURNED_TRANSACTIONS = 5000
 # This is simple.  More sophisticated systems will be possible.
 # This is a significatn limit on the number of records returned.
-LIMIT_NUM_MATCHING_TRANSACTIONS = 5000*1000
+LIMIT_NUM_MATCHING_TRANSACTIONS = 5000
 
 # Note: Eventually, we need to do some sort of auto-loading to get this to work.
 VERSION_ADAPTER_MAP = { '1': [loadFedBidFromCSVFile,getDictionaryFromFedBid],
@@ -170,7 +170,7 @@ def searchApiSolr(pathToData,search_string,psc_pattern):
     # I either need to use ediscmax or do something else.
     transactionDicts = solrCon.query(mainSearch,rows=LIMIT_NUM_MATCHING_TRANSACTIONS,fq=pscSearch,fl='*,score',deftype='edismax')
     for hit in transactionDicts.results:
-        hit['score'] = int(Decimal(hit['score']*100).quantize(Decimal('1'), rounding=ROUND_UP))
+        hit['score'] = int(Decimal(str(hit['score']*100)).quantize(Decimal('1'), rounding=ROUND_UP))
 
     transactionDicts = transactionDicts.results
     numRows = len(transactionDicts)
