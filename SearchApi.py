@@ -142,7 +142,7 @@ def searchApi(pathToData,search_string,psc_pattern):
     logger.info(timeToReturn)    
     return transactionDict
 
-
+AGGREGATED_TEXT_FIELD = "text";
 
 def searchApiSolr(pathToData,search_string,psc_pattern):
 # create a connection to a solr server
@@ -162,6 +162,7 @@ def searchApiSolr(pathToData,search_string,psc_pattern):
     logger.info("Searching for search_string,psc" + search_string+","+psc_pattern)
     
     # do a search
+#    mainSearch = AGGREGATED_TEXT_FIELD+':'+search_string
     mainSearch = Transaction.LONGDESCR+':'+search_string
     pscSearch = Transaction.PSC+':'+psc_pattern
 
