@@ -63,8 +63,8 @@ nature works by lots of duplication of effort.
 
 WHY THIS CODE WILL BE HARD TO USE AT PRESENT
 
-*) I haven't given you installation instructions.
-*) The sister project which uses it is not available yet.
+*) The installation instructionds in docs/INSTALLATION.txt is incomplete.
+*) The sister project PricesPaidGUI is availabel but immature.
 
 There is a file, ppconfig.example.py.  I name this ppconfig.py and place it above the main 
 PricesPaidAPI directory, because it is shared by the sister project PricesPaidGUI.  It is included
