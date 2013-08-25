@@ -65,9 +65,20 @@ WHY THIS CODE WILL BE HARD TO USE AT PRESENT
 
 *) I haven't given you installation instructions.
 *) The sister project which uses it is not available yet.
-*) I haven't uploaded any sample data.
 
 There is a file, ppconfig.example.py.  I name this ppconfig.py and place it above the main 
 PricesPaidAPI directory, because it is shared by the sister project PricesPaidGUI.  It is included
 here as an example.  To get the system to work you will have to have change ppconfig.example.py
 as appropriate and move it somewhere where app.wsgi can find it.  
+
+Note that a very poor example file exists in the "cookedData" file.  This is a highly redacted and
+inaccurate version containing only one record for example purposes.  I hacked this from a file
+I am actually using.  The basic approach of PricesPaidAPI at present is to read .CSV files like 
+that one.  Note that name of the file follows a strict convention that defines which adapter to use.
+If you would like to use this project for something else, create your own adapter, possibly using
+the same filename/versioning convention.
+
+The basic idea of this project is to have many such .csv files using many different adapters.
+
+Note that the cookedData directory in this project is NOT in the place it is configured to be
+in ppcofig.example.py.  I have added it here only as an example.
