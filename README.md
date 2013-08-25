@@ -63,8 +63,11 @@ nature works by lots of duplication of effort.
 
 WHY THIS CODE WILL BE HARD TO USE AT PRESENT
 
-*) I haven't uploaded the configuration.py file that is needed.
 *) I haven't given you installation instructions.
 *) The sister project which uses it is not available yet.
 *) I haven't uploaded any sample data.
 
+There is a file, ppconfig.example.py.  I name this ppconfig.py and place it above the main 
+PricesPaidAPI directory, because it is shared by the sister project PricesPaidGUI.  It is included
+here as an example.  To get the system to work you will have to have change ppconfig.example.py
+as appropriate and move it somewhere where app.wsgi can find it.  
