@@ -35,6 +35,8 @@ really a security restricition on the SOLR web service. The main thing it does i
 formats (2 at present) into a single database that can be rendered. It is thus an approach to using
 simple Python programs to harmonize data.  Eventually, we hope it will be used on many data sets.
 
+In docs/example.SOLR.schema.xml is an example of the schema.xml file that I use.  This will be currently evolving.
+
 THE SISTER PROJECT
 
 Although we are presenting an Api which (when hosted) will let any programmer do as they please in 
