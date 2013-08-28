@@ -114,6 +114,10 @@ def searchApiSolr(URLToSolr,pathToData,search_string,psc_pattern):
         # remove the version and the id which come back
         del hit['id']
         del hit['_version_']
+        for f in hit:
+            if f[-2:] == '_t':
+                hit[f[:-2]] = hit[f]
+                del hit[f]
 
     transactionDicts = transactionDicts.results
     numRows = len(transactionDicts)
