@@ -43,7 +43,7 @@ turnOnGlobalCache = True
 LIMIT_NUM_RETURNED_TRANSACTIONS = 5000
 # This is simple.  More sophisticated systems will be possible.
 # This is a significatn limit on the number of records returned.
-LIMIT_NUM_MATCHING_TRANSACTIONS = 5000
+LIMIT_NUM_MATCHING_TRANSACTIONS = 5000*1000
 
 # Note: Eventually, we need to do some sort of auto-loading to get this to work.
 VERSION_ADAPTER_MAP = { '1': [loadFedBidFromCSVFile,getDictionaryFromFedBid],
@@ -55,6 +55,7 @@ def loadDirectory(dirpath,pattern,version_adapter_map = VERSION_ADAPTER_MAP):
     transactions = []
     onlycsvfiles = [ f for f in onlyfiles if re.search(".csv$",f)]
     for filename in onlycsvfiles:
+        print filename
         if len(transactions) > LIMIT_NUM_MATCHING_TRANSACTIONS:
             break
         version = Transaction.parseFormatVersion(filename)
@@ -162,8 +163,8 @@ def searchApiSolr(pathToData,search_string,psc_pattern):
     logger.info("Searching for search_string,psc" + search_string+","+psc_pattern)
     
     # do a search
-#    mainSearch = AGGREGATED_TEXT_FIELD+':'+search_string
-    mainSearch = Transaction.LONGDESCR+':'+search_string
+    mainSearch = AGGREGATED_TEXT_FIELD+':'+search_string
+#    mainSearch = Transaction.LONGDESCR+':'+search_string
     pscSearch = Transaction.PSC+':'+psc_pattern
 
     # the magic happens here...
