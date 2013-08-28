@@ -2,6 +2,7 @@ import Transaction
 import time
 from decimal import *
 
+
 # Note: For now, these are explict imports.
 # Evntually, we want to make this automatic, and essentially
 # create a dynamic array of adapters and loaders based on
@@ -80,75 +81,11 @@ def loadDirectory(dirpath,pattern,version_adapter_map = VERSION_ADAPTER_MAP):
         +str(len(transactions)))
     return transactions
 
-# mod_wsgi pipe output to the error log.  The Bottle webserver doesn't,
-# so this difference can be a little confusing.
-def searchApi(pathToData,search_string,psc_pattern):
-    global globalTransactionDir
-    localTransactionDir = None
-    
-    timeSearchBegin = time.clock()
-
-    transaction = None
-
-    if turnOnGlobalCache:
-        if (globalTransactionDir is None):
-            print "Using cache."
-            t0 = time.clock()
-            globalTransactionDir = Transaction.TransactionDirector()
-            # it would be better to control whether it is loaded,
-            # but this should work
-            globalTransactionDir.transactions = loadDirectory(pathToData,None)
-            numRows = len(globalTransactionDir.transactions)
-            timeToLoadAll = "Time To Load ALL Data: " +str(time.clock()-t0)
-            print timeToLoadAll
-            logger.info(timeToLoadAll)
-            logger.info("Num Rows in globalTransaction "+str(numRows))        
-        else:
-            print "Using Cached globalTransactionDir"
-        tsearch = time.clock()
-        logger.info("Searching for search_string,psc" + search_string+","+psc_pattern)
-        transactions = globalTransactionDir.findAllMatching(search_string,\
-                                                            psc_pattern)
-        timeToSearch = "Time To Search ALL Data for "+search_string + ": " +\
-          str(time.clock()-tsearch)
-        print timeToSearch
-        logger.info(timeToSearch)        
-    else:
-        # this code is without caching
-        print "Not using cache."
-        logger.info("Not using cache.")        
-        localTransactionDir = Transaction.TransactionDirector()        
-        t1 = time.clock()
-
-        logger.info("Searching for search_string,psc" + search_string+","+psc)        
-        globalTransactionDir.transactions = \
-          loadDirectory(pathToData,search_string,psc_pattern)
-        numRows = len(globalTransactionDir.transactions)
-        timeToLoad = "Time To Load Data for "+search_string + ": " +str(time.clock()-t1)
-        logger.info(timeToLoad)
-        print timeToLoad
-        transactions = localTransactionDir.transactions
-        
-    totalNumber = "Total Number of Transactions in Dataset: "+str(len(transactions))
-    print totalNumber
-    logger.info(totalNumber)
-        
-    transactions = [tr.dict for tr in transactions[0:LIMIT_NUM_RETURNED_TRANSACTIONS]]
-    secondTotal = "Second Total Number of Transactions in Dataset: "+str(len(transactions))
-    print secondTotal
-    logger.info(secondTotal)    
-    transactionDict = dict(zip(range(0, len(transactions)),transactions))
-    timeToReturn =  "Time To Return from SearchApi: " +str(time.clock()-timeSearchBegin)
-    print timeToReturn
-    logger.info(timeToReturn)    
-    return transactionDict
-
 AGGREGATED_TEXT_FIELD = "text";
 
-def searchApiSolr(pathToData,search_string,psc_pattern):
+def searchApiSolr(URLToSolr,pathToData,search_string,psc_pattern):
 # create a connection to a solr server
-# This needs to come from ppconfig
-    solrCon = solr.SolrConnection('http://localhost:8983/solr')
+    solrCon = solr.SolrConnection(URLToSolr)
     localTransactionDir = None
     
     timeSearchBegin = time.clock()
@@ -164,7 +101,6 @@ def searchApiSolr(pathToData,search_string,psc_pattern):
     
     # do a search
     mainSearch = AGGREGATED_TEXT_FIELD+':'+search_string
-#    mainSearch = Transaction.LONGDESCR+':'+search_string
     pscSearch = Transaction.PSC+':'+psc_pattern
 
     # the magic happens here...
@@ -172,7 +108,12 @@ def searchApiSolr(pathToData,search_string,psc_pattern):
     # I either need to use ediscmax or do something else.
     transactionDicts = solrCon.query(mainSearch,rows=LIMIT_NUM_MATCHING_TRANSACTIONS,fq=pscSearch,fl='*,score',deftype='edismax')
     for hit in transactionDicts.results:
+        # massage the score a little bit --- could normalize to
+        # 100% to make a little nicer in the future...
         hit['score'] = int(Decimal(str(hit['score']*100)).quantize(Decimal('1'), rounding=ROUND_UP))
+        # remove the version and the id which come back
+        del hit['id']
+        del hit['_version_']
 
     transactionDicts = transactionDicts.results
     numRows = len(transactionDicts)
