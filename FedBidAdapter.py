@@ -1,11 +1,12 @@
 import csv
 from Transaction import RawTransaction,BasicTransaction,replaceUndumpableData,UNITS, \
-     PRICE,AGENCY,VENDOR,PSC,DESCR,DATE,LONGDESCR,AWARDIDIDV
+     PRICE,AGENCY,VENDOR,PSC,DESCR,DATE,LONGDESCR,AWARDIDIDV,DATASOURCE
 import datetime
 import calendar
 
 import sys, traceback
 import logging
+import os
 
 logger = logging.getLogger('PricesPaidTrans')
 hdlr = logging.FileHandler('/var/tmp/PricesPaidTrans.log')
@@ -31,10 +32,11 @@ def findMonthFromAbbrev(a):
 
     # Need to test this month lookup stuff, right now
     # it is untested.
-def getDictionaryFromFedBid(raw):
+def getDictionaryFromFedBid(raw,datasource):
     try:
         d = datetime.date(int(raw.data[4].strip(' \t\n\r').upper()),findMonthFromAbbrev(raw.data[5]),1)
         return { \
+           DATASOURCE : datasource, \
            UNITS : replaceUndumpableData(raw.data[37]) , \
            PRICE : replaceUndumpableData(raw.data[38]), \
            AGENCY : replaceUndumpableData(raw.data[3]) , \
@@ -61,6 +63,7 @@ def loadFedBidFromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIO
     try:
         transactions = []
         with open(filename, 'rb') as f:
+            basename = os.path.basename(filename)
             reader = csv.reader(f)
             logger.info('FedBid reader opened:'+filename)
             n = len(transactions)
@@ -73,7 +76,7 @@ def loadFedBidFromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIO
                     result = False
                     notFoundFirstRecord = False;
                 else:
-                    bt = BasicTransaction(adapter,tr)
+                    bt = BasicTransaction(adapter,tr,basename)
                     if (pattern):
                         result = re.search(pattern, bt.getSearchMemento())
                     else:

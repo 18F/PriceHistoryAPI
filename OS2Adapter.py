@@ -1,7 +1,8 @@
 import csv
 from Transaction import RawTransaction,BasicTransaction,replaceUndumpableData,UNITS, \
-     PRICE,AGENCY,VENDOR,PSC,DESCR,DATE,LONGDESCR,AWARDIDIDV
-
+     PRICE,AGENCY,VENDOR,PSC,DESCR,DATE,LONGDESCR,AWARDIDIDV,DATASOURCE
+     
+import os
      
 import logging
 logger = logging.getLogger('PricesPaidTrans')
@@ -15,8 +16,9 @@ logger.setLevel(logging.ERROR)
 # Note: Highest priority is remove redundancy with FedBidAdapater,
 # create "Standard Fields" adapter and "Custom Fields" adapter separately.
 
-def getDictionaryFromOS2(raw):
+def getDictionaryFromOS2(raw,datasource):
     return { \
+    DATASOURCE : datasource, \
     UNITS : replaceUndumpableData(raw.data[16]), \
     PRICE : replaceUndumpableData(raw.data[19]), \
     AGENCY : replaceUndumpableData(raw.data[48]), \
@@ -54,6 +56,7 @@ def loadOS2FromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIONS)
         logger.error('FedBid reader opened:'+filename)
         transactions = []
         with open(filename, 'rb') as f:
+            basename = os.path.basename(basename)
             reader = csv.reader(f)
             logger.error('FedBid reader opened:'+filename)
             n = len(transactions)

@@ -50,7 +50,7 @@ hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 
 logger.setLevel(logging.ERROR)
 
-LIMIT_NUM_MATCHING_TRANSACTIONS = 5000*1000
+LIMIT_NUM_MATCHING_TRANSACTIONS = 5000*1000*100;
 
 # create a connection to a solr server
 # This needs to come from ppconfig

@@ -114,6 +114,7 @@ def searchApiSolr(URLToSolr,pathToData,search_string,psc_pattern):
         # remove the version and the id which come back
         del hit['id']
         del hit['_version_']
+        # remove the _t auto-tag so it will look nicer when rendered.
         for f in hit:
             if f[-2:] == '_t':
                 hit[f[:-2]] = hit[f]

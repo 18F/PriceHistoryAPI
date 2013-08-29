@@ -21,6 +21,7 @@ DESCR = "productDescription"
 LONGDESCR = "longDescription"
 DATE = "orderDate"
 AWARDIDIDV = "awardIdIdv"
+DATASOURCE = "dataSource"
 
 STANDARD_FIELDS = [UNITS,PRICE,AGENCY,VENDOR,PSC,DESCR,LONGDESCR,DATE,AWARDIDIDV]
 
@@ -56,13 +57,14 @@ class RawTransaction:
 
 class BasicTransaction:
     "A Dictionary of Partial scructured Data"
-    def __init__(self,adapter,raw):
+    def __init__(self,adapter,raw,datasource):
         self.fields = None
+        self.datasource = datasource
         self.dictionaryAdapter = adapter
         self.dict = self.getStandardDictionary(raw)
 
     def getStandardDictionary(self,rawTransaction):
-        xdict = self.dictionaryAdapter(rawTransaction)
+        xdict = self.dictionaryAdapter(rawTransaction,self.datasource)
         xdict = self.cleanUpData(xdict)
         return xdict
 
