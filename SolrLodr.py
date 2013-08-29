@@ -7,8 +7,8 @@ import sys, traceback
 # This file is for (for example) Apache with mod_wsgi.
 import sys, os
 
-import sys
-sys.path.insert(0, '../configuration/')
+# import sys
+# sys.path.insert(0, '../configuration/')
 
 # The purpose of this file is to take the standard
 # datafiles and load them into SOLR in such a way that they
@@ -26,7 +26,7 @@ sys.path.insert(0, '../configuration/')
 import Transaction
 import time
 
-from ppconfig import PathToDataFiles
+from ppApiConfig import PathToDataFiles
 
 # Note: For now, these are explict imports.
 # Evntually, we want to make this automatic, and essentially

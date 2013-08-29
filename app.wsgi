@@ -1,12 +1,11 @@
 # This file is for (for example) Apache with mod_wsgi.
 import sys, os
 
-import ppApiConfig
+from ppApiConfig import WsgiAbsolutePath
 
 # These are requires if you are using mod_wsgi.
 # I know, I know, this should not be needed, but I haven't found a way
 # around it yet.
-WsgiAbsolutePath = ppApiConfig.WsgiAbsolutePath
 
 sys.path = [WsgiAbsolutePath] + sys.path
 os.chdir( WsgiAbsolutePath )

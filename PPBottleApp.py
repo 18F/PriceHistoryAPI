@@ -4,7 +4,7 @@ from bottle import Bottle, run, template,request,TEMPLATE_PATH,static_file
 
 from SearchApi import searchApiSolr
 
-from ppconfig import MasterPassword,MasterUsername,PathToDataFiles,URLToSolr
+from ppApiConfig import MasterPassword,MasterUsername,PathToDataFiles,URLToSolr
 
 app = Bottle()
 
