@@ -1,14 +1,12 @@
 # This file is for (for example) Apache with mod_wsgi.
 import sys, os
 
-import sys
-sys.path.insert(0, '../configuration/')
-# There is currently nothing in configuration that we are using
+import ppApiConfig
 
 # These are requires if you are using mod_wsgi.
 # I know, I know, this should not be needed, but I haven't found a way
 # around it yet.
-WsgiAbsolutePath = '/home/robert/PricesPaid/PricesPaidAPI'
+WsgiAbsolutePath = ppApiConfig.WsgiAbsolutePath
 
 sys.path = [WsgiAbsolutePath] + sys.path
 os.chdir( WsgiAbsolutePath )
