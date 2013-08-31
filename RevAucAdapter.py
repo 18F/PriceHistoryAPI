@@ -19,7 +19,7 @@ logger.setLevel(logging.ERROR)
 # This works in 2.7, which I don't have on the AWS instance yet!
 # monthLookup = {v.upper(): k for k,v in enumerate(calendar.month_abbr)}
 monthLookup = dict((v.upper(),k) for k,v in enumerate(calendar.month_abbr))
-# This are magic numbers that are simply based on the FedBid files
+# This are magic numbers that are simply based on the RevAuc files
 # as Laura presented them to me.
 def findMonthFromAbbrev(a):
     global monthLookup
@@ -32,7 +32,7 @@ def findMonthFromAbbrev(a):
 
     # Need to test this month lookup stuff, right now
     # it is untested.
-def getDictionaryFromFedBid(raw,datasource):
+def getDictionaryFromRevAuc(raw,datasource):
     try:
         d = datetime.date(int(raw.data[4].strip(' \t\n\r').upper()),findMonthFromAbbrev(raw.data[5]),1)
         return { \
@@ -59,13 +59,13 @@ def getDictionaryFromFedBid(raw,datasource):
 # I think this will be better made into a pure function and
 # perhaps actually separated into particular formats (to
 # allow more override flexibility, like skipping the first row.)
-def loadFedBidFromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIONS):
+def loadRevAucFromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIONS):
     try:
         transactions = []
         with open(filename, 'rb') as f:
             basename = os.path.basename(filename)
             reader = csv.reader(f)
-            logger.info('FedBid reader opened:'+filename)
+            logger.info('RevAuc reader opened:'+filename)
             n = len(transactions)
             i = 0
             notFoundFirstRecord = True
