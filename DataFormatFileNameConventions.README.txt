@@ -18,7 +18,7 @@ truly identifies a growing set of formats, the Format Version allows us to
 revise the versions.
 
 The purpose of this system is to mark the format of a file.  At the 
-time of this writing, there will be two formats: FedBid (1) and OS2 (2).
+time of this writing, there will be two formats: RevAuc (1) and OS2 (2).
 
 We will probably write python code that will decode the filename into 
 the python file that knows how to read the data into something resembling

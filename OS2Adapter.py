@@ -13,7 +13,7 @@ logger.addHandler(hdlr)
 logger.setLevel(logging.ERROR)
 
 # Note: Josh Royko said all of this AwardIdIdv is or a particular GSA schedule
-# Note: Highest priority is remove redundancy with FedBidAdapater,
+# Note: Highest priority is remove redundancy with OS2Adapater,
 # create "Standard Fields" adapter and "Custom Fields" adapter separately.
 
 def getDictionaryFromOS2(raw,datasource):
@@ -53,18 +53,18 @@ def getDictionaryFromOS2(raw,datasource):
 
 def loadOS2FromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIONS):
    try:
-        logger.error('FedBid reader opened:'+filename)
+        logger.error('OS2 reader opened:'+filename)
         transactions = []
         with open(filename, 'rb') as f:
-            basename = os.path.basename(basename)
+            basename = os.path.basename(filename)
             reader = csv.reader(f)
-            logger.error('FedBid reader opened:'+filename)
+            logger.error('OS2 reader opened:'+filename)
             n = len(transactions)
             i = 0
             for row in reader:
                 tr = RawTransaction("spud")
                 tr.data = row;
-                bt = BasicTransaction(adapter,tr)
+                bt = BasicTransaction(adapter,tr,basename)
                 if (pattern):
                     result = re.search(pattern, bt.getSearchMemento())
                 else:

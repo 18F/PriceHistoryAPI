@@ -8,7 +8,7 @@ from decimal import *
 # create a dynamic array of adapters and loaders based on
 # what we find in some directory so that it is easily
 # extendable.  But that would be over-engineering if we did it now.
-from FedBidAdapter import getDictionaryFromFedBid,loadFedBidFromCSVFile
+from RevAucAdapter import getDictionaryFromRevAuc,loadRevAucFromCSVFile
 from OS2Adapter import getDictionaryFromOS2,loadOS2FromCSVFile
 from os import listdir
 from os.path import isfile, join
@@ -47,7 +47,7 @@ LIMIT_NUM_RETURNED_TRANSACTIONS = 5000
 LIMIT_NUM_MATCHING_TRANSACTIONS = 5000*1000
 
 # Note: Eventually, we need to do some sort of auto-loading to get this to work.
-VERSION_ADAPTER_MAP = { '1': [loadFedBidFromCSVFile,getDictionaryFromFedBid],
+VERSION_ADAPTER_MAP = { '1': [loadRevAucFromCSVFile,getDictionaryFromRevAuc],
                         '2': [loadOS2FromCSVFile,getDictionaryFromOS2] }
 
 # This routine needs to become the basis of the SolrLodr...
@@ -63,7 +63,7 @@ def loadDirectory(dirpath,pattern,version_adapter_map = VERSION_ADAPTER_MAP):
         if not version:
              logger.error('File in wrong format: '+dirpath+filename)
         else:
-            # FedBid data has number 1
+            # RevAuc data has number 1
             # This would be better with a functional "cond" type operator
             adapter = None
             logger.info('version:'+version)

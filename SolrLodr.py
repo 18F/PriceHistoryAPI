@@ -33,7 +33,7 @@ from ppApiConfig import PathToDataFiles
 # create a dynamic array of adapters and loaders based on
 # what we find in some directory so that it is easily
 # extendable.  But that would be over-engineering if we did it now.
-from FedBidAdapter import getDictionaryFromFedBid,loadFedBidFromCSVFile
+from RevAucAdapter import getDictionaryFromRevAuc,loadRevAucFromCSVFile
 from OS2Adapter import getDictionaryFromOS2,loadOS2FromCSVFile
 from os import listdir
 from os.path import isfile, join
