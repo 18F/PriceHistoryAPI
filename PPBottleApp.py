@@ -8,8 +8,7 @@ from ppApiConfig import MasterPassword,MasterUsername,PathToDataFiles,URLToSolr
 
 app = Bottle()
 
-def does_authenticate(user,password):
-    return (user == MasterUsername and password == MasterPassword)
+import auth
 
 def convertPSCToLegalPattern(str):
     if (str is None) or (str == 'None') or (str == ''):
@@ -28,9 +27,9 @@ def convertSearchStringToLegalPattern(str):
 
 @app.route('/apisolr',method='POST')
 def apisolr():
-    user = request.forms.get('user')
+    user = request.forms.get('username')
     password = request.forms.get('password')
-    if (not does_authenticate(user,password)):
+    if (not auth.does_authenticate(user,password)):
         return template('BadAuthentication')        
     search_string = request.forms.get('search_string')
     psc_pattern = request.forms.get('psc_pattern')
@@ -39,5 +38,6 @@ def apisolr():
     print "APISOLR search_string" + search_string
     print "PSCSOLR search_string" + psc_pattern
     return searchApiSolr(URLToSolr,PathToDataFiles,search_string,psc_pattern)
+
 
 

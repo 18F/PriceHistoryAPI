@@ -43,8 +43,9 @@ turnOnGlobalCache = True
 # the API call.
 LIMIT_NUM_RETURNED_TRANSACTIONS = 5000
 # This is simple.  More sophisticated systems will be possible.
-# This is a significatn limit on the number of records returned.
-LIMIT_NUM_MATCHING_TRANSACTIONS = 5000*1000
+# This is a significatn limit on the number of records returned,
+# but seems like a reasonable safety valve.
+LIMIT_NUM_MATCHING_TRANSACTIONS = 5000
 
 # Note: Eventually, we need to do some sort of auto-loading to get this to work.
 VERSION_ADAPTER_MAP = { '1': [loadRevAucFromCSVFile,getDictionaryFromRevAuc],
