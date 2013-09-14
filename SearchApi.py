@@ -41,11 +41,11 @@ turnOnGlobalCache = True
 # we can't afford to send everything back to the browser...
 # Actually, even better would be to make this limit a part of
 # the API call.
-LIMIT_NUM_RETURNED_TRANSACTIONS = 5000
+LIMIT_NUM_RETURNED_TRANSACTIONS = 1000
 # This is simple.  More sophisticated systems will be possible.
 # This is a significatn limit on the number of records returned,
 # but seems like a reasonable safety valve.
-LIMIT_NUM_MATCHING_TRANSACTIONS = 5000
+LIMIT_NUM_MATCHING_TRANSACTIONS = 1000
 
 # Note: Eventually, we need to do some sort of auto-loading to get this to work.
 VERSION_ADAPTER_MAP = { '1': [loadRevAucFromCSVFile,getDictionaryFromRevAuc],
@@ -107,6 +107,7 @@ def searchApiSolr(URLToSolr,pathToData,search_string,psc_pattern):
     # the magic happens here...
     # you can add q_op='AND' here, but it seems to shut down all instances.  I'm afraid
     # I either need to use ediscmax or do something else.
+    print "rows = "+ str(LIMIT_NUM_MATCHING_TRANSACTIONS)
     transactionDicts = solrCon.query(mainSearch,rows=LIMIT_NUM_MATCHING_TRANSACTIONS,fq=pscSearch,fl='*,score',deftype='edismax')
     for hit in transactionDicts.results:
         # massage the score a little bit --- could normalize to

@@ -4,7 +4,7 @@ from bottle import Bottle, run, template,request,TEMPLATE_PATH,static_file
 
 from SearchApi import searchApiSolr
 
-from ppApiConfig import MasterPassword,MasterUsername,PathToDataFiles,URLToSolr
+from ppApiConfig import PathToDataFiles,URLToSolr
 
 app = Bottle()
 
@@ -25,10 +25,17 @@ def convertSearchStringToLegalPattern(str):
     else:
         return str;
 
-@app.route('/apisolr',method='POST')
+
+@app.route('/hello',method='GET')
+def trivtest():
+    return "true"
+
+@app.route('/',method='POST')
 def apisolr():
     user = request.forms.get('username')
     password = request.forms.get('password')
+    print "user" + user;
+    print "password" + password;
     if (not auth.does_authenticate(user,password)):
         return template('BadAuthentication')        
     search_string = request.forms.get('search_string')
