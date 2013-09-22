@@ -34,16 +34,13 @@ def trivtest():
 def apisolr():
     user = request.forms.get('username')
     password = request.forms.get('password')
-    print "user" + user;
-    print "password" + password;
     if (not auth.does_authenticate(user,password)):
-        return template('BadAuthentication')        
+        dict = {0: {"status": "BadAuthentication"}}
+        return dict;
     search_string = request.forms.get('search_string')
     psc_pattern = request.forms.get('psc_pattern')
     search_string = convertSearchStringToLegalPattern(search_string);
     psc_pattern = convertPSCToLegalPattern(psc_pattern);
-    print "APISOLR search_string" + search_string
-    print "PSCSOLR search_string" + psc_pattern
     return searchApiSolr(URLToSolr,PathToDataFiles,search_string,psc_pattern)
 
 

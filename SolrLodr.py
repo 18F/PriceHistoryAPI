@@ -44,7 +44,7 @@ import logging
 import SearchApi
 
 logger = logging.getLogger('PPSolrLodr')
-hdlr = logging.FileHandler('/var/tmp/PPSolrLodr.log')
+hdlr = logging.FileHandler('../logs/PPSolrLodr.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 

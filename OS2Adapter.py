@@ -6,7 +6,7 @@ import os
      
 import logging
 logger = logging.getLogger('PricesPaidTrans')
-hdlr = logging.FileHandler('/var/tmp/PricesPaidTrans.log')
+hdlr = logging.FileHandler('../logs/PricesPaidTrans.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 

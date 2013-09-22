@@ -19,6 +19,8 @@ Install the virtual hosts sections to the httpd.conf file that you get
 from Robert L. Read or the project directory
 Install easy_install with: wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py -O - | python 
 Install bottle with easy_install
+Install pip
+Install requests
 install pysolr https://pypi.python.org/pypi/pysolr/3.1.0 with 
 “sudo python setup.py install or drop the pysolr.py file anywhere on your PYTHONPATH.
 Install solr-4.4 with scp copy of the tgz file --- 
