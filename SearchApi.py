@@ -10,6 +10,8 @@ from decimal import *
 # extendable.  But that would be over-engineering if we did it now.
 from RevAucAdapter import getDictionaryFromRevAuc,loadRevAucFromCSVFile
 from OS2Adapter import getDictionaryFromOS2,loadOS2FromCSVFile
+from GSAAdvAdapter import getDictionaryFromGSAAdv,loadGSAAdvFromCSVFile
+
 from os import listdir
 from os.path import isfile, join
 import re
@@ -41,15 +43,16 @@ turnOnGlobalCache = True
 # we can't afford to send everything back to the browser...
 # Actually, even better would be to make this limit a part of
 # the API call.
-LIMIT_NUM_RETURNED_TRANSACTIONS = 1000
+LIMIT_NUM_RETURNED_TRANSACTIONS = 1000 * 5000
 # This is simple.  More sophisticated systems will be possible.
 # This is a significatn limit on the number of records returned,
 # but seems like a reasonable safety valve.
-LIMIT_NUM_MATCHING_TRANSACTIONS = 1000
+LIMIT_NUM_MATCHING_TRANSACTIONS = 1000 * 5000
 
 # Note: Eventually, we need to do some sort of auto-loading to get this to work.
 VERSION_ADAPTER_MAP = { '1': [loadRevAucFromCSVFile,getDictionaryFromRevAuc],
-                        '2': [loadOS2FromCSVFile,getDictionaryFromOS2] }
+                        '2': [loadOS2FromCSVFile,getDictionaryFromOS2],
+                        '3': [loadGSAAdvFromCSVFile,getDictionaryFromGSAAdv] }
 
 # This routine needs to become the basis of the SolrLodr...
 def loadDirectory(dirpath,pattern,version_adapter_map = VERSION_ADAPTER_MAP):

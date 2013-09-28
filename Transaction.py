@@ -70,6 +70,8 @@ class BasicTransaction:
 
     def cleanUpData(self,qdict):
         qdict[PRICE] = qdict[PRICE].replace("$","")
+        # add a whitespace trim
+        # add a zipcode leading zero if only four digits
         return qdict
     
     def getJSON(self):

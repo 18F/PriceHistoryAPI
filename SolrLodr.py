@@ -35,6 +35,9 @@ from ppApiConfig import PathToDataFiles
 # extendable.  But that would be over-engineering if we did it now.
 from RevAucAdapter import getDictionaryFromRevAuc,loadRevAucFromCSVFile
 from OS2Adapter import getDictionaryFromOS2,loadOS2FromCSVFile
+from GSAAdvAdapter import getDictionaryFromGSAAdv,loadGSAAdvFromCSVFile
+
+
 from os import listdir
 from os.path import isfile, join
 import re
@@ -92,7 +95,7 @@ def loadChunk(chunk):
         print "about to add "+str(len(l))
         solrCon.add_many(l)
         solrCon.commit()
-        print "succes"
+        print "success"
     except:
         print "failure"
         exc_type, exc_value, exc_traceback = sys.exc_info()
