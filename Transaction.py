@@ -24,6 +24,20 @@ AWARDIDIDV = "awardIdIdv"
 DATASOURCE = "dataSource"
 
 STANDARD_FIELDS = [UNITS,PRICE,AGENCY,VENDOR,PSC,DESCR,LONGDESCR,DATE,AWARDIDIDV]
+# Need to create Semi-standard fields here...
+
+MANUFACTURER_NAME = "Manufacturer Name"
+MANUFACTURER_PART_NUMBER =    "Manufacturer Part Number"
+BUREAU = "Bureau"
+CONTRACT_NUMBER = "Contract Number"
+TO_ZIP_CODE = "To Zip Code"
+FROM_ZIP_CODE = "From Zip Code" 
+UNIT_OF_ISSUE = "Unit of Issue"
+
+SEMI_STANDARD_FIELDS = [MANUFACTURER_NAME,MANUFACTURER_PART_NUMBER,BUREAU,CONTRACT_NUMBER,TO_ZIP_CODE,FROM_ZIP_CODE,UNIT_OF_ISSUE]
+
+def ensureZipCodeHasFiveDigits(zip):
+    return zip.zfill(5)
 
 def parseFormatVersion(filename):
     match = re.search(r"(\w+)-pppifver-(\w+)-(\d+)-(\d+)-(\d+)-(\d+)-(\d+).csv",filename)
@@ -71,7 +85,8 @@ class BasicTransaction:
     def cleanUpData(self,qdict):
         qdict[PRICE] = qdict[PRICE].replace("$","")
         # add a whitespace trim
-        # add a zipcode leading zero if only four digits
+        for key, value in qdict.iteritems():
+            qdict[key] = value.strip();
         return qdict
     
     def getJSON(self):

@@ -1,10 +1,13 @@
 # This should actually be renamed so that it is not confused
 # with the file of the same name in PricesPaidGUI
 from bottle import Bottle, run, template,request,TEMPLATE_PATH,static_file
+from bottle import response
+
+import json
 
 from SearchApi import searchApiSolr
 
-from ppApiConfig import PathToDataFiles,URLToSolr
+from ppApiConfig import PathToDataFiles,URLToSolr,LIMIT_NUM_MATCHING_TRANSACTIONS
 
 app = Bottle()
 
@@ -25,23 +28,51 @@ def convertSearchStringToLegalPattern(str):
     else:
         return str;
 
+def processSearchRequest(user,password,search_string,
+                         psc_pattern,numRows = LIMIT_NUM_MATCHING_TRANSACTIONS):
+    if (not auth.does_authenticate(user,password)):
+        dict = {0: {"status": "BadAuthentication"}}
+        return dict;
+    search_string = convertSearchStringToLegalPattern(search_string);
+    psc_pattern = convertPSCToLegalPattern(psc_pattern);
+
+    return searchApiSolr(URLToSolr,PathToDataFiles,search_string,psc_pattern,numRows)
 
 @app.route('/hello',method='GET')
 def trivtest():
     return "true"
 
+# The problem is this is using Pythonism (the unicode string)
+# when it shouldn't.  I need to look into Bottle and 
+# understand do whatever it does to convert unicode strings
+# to javascript strings...
+def jsonp(request, dictionary):
+    if (request.query.callback):
+        return "%s(%s)" % (request.query.callback, json.dumps(dictionary))
+    return dictionary
+
+@app.route('/',method='GET')
+def apisolr():
+    user = request.query.get('p3username')
+    password = request.query.get('p3password')
+    numRows = request.query.get('numRows')
+    search_string = request.query.get('search_string')
+    psc_pattern = request.query.get('psc_pattern')
+    if (request.query.callback):
+        response.content_type = "application/javascript"
+        return jsonp(request,
+                     processSearchRequest(user,password,
+                                          search_string,psc_pattern,numRows))
+    return processSearchRequest(user,password,
+                                search_string,psc_pattern,numRows)
+
 @app.route('/',method='POST')
 def apisolr():
     user = request.forms.get('username')
     password = request.forms.get('password')
-    if (not auth.does_authenticate(user,password)):
-        dict = {0: {"status": "BadAuthentication"}}
-        return dict;
     search_string = request.forms.get('search_string')
     psc_pattern = request.forms.get('psc_pattern')
-    search_string = convertSearchStringToLegalPattern(search_string);
-    psc_pattern = convertPSCToLegalPattern(psc_pattern);
-    return searchApiSolr(URLToSolr,PathToDataFiles,search_string,psc_pattern)
+    return processSearchRequest(user,password,search_string,psc_pattern)
 
 
 

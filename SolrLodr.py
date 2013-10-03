@@ -26,7 +26,7 @@ import sys, os
 import Transaction
 import time
 
-from ppApiConfig import PathToDataFiles
+from ppApiConfig import PathToDataFiles, MAXIMUM_NUMBER_TO_LOAD
 
 # Note: For now, these are explict imports.
 # Evntually, we want to make this automatic, and essentially
@@ -112,6 +112,10 @@ def loadSolr(transactions):
 
 # Before we load, we need to delete!
 # This seems a little dangerous, but there is not much we can do.
+
+# We really want to make this a command-line argument so 
+# that we can load one data file at a time.
 response = solrCon.delete_query('*:*')
 solrCon.commit()
-loadSolr(SearchApi.loadDirectory(PathToDataFiles,None))
+
+SearchApi.applyToLoadedFiles(PathToDataFiles,None,loadSolr,MAXIMUM_NUMBER_TO_LOAD)

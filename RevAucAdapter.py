@@ -1,6 +1,7 @@
 import csv
 from Transaction import RawTransaction,BasicTransaction,replaceUndumpableData,UNITS, \
      PRICE,AGENCY,VENDOR,PSC,DESCR,DATE,LONGDESCR,AWARDIDIDV,DATASOURCE
+
 import datetime
 import calendar
 
@@ -34,7 +35,7 @@ def findMonthFromAbbrev(a):
     # it is untested.
 def getDictionaryFromRevAuc(raw,datasource):
     try:
-        d = datetime.date(int(raw.data[4].strip(' \t\n\r').upper()),findMonthFromAbbrev(raw.data[5]),1)
+        d = datetime.datetime.strptime(raw.data[21].strip(' \t\n\r'),"%m/%d/%Y")
         return { \
            DATASOURCE : datasource, \
            UNITS : replaceUndumpableData(raw.data[37]) , \
@@ -45,7 +46,7 @@ def getDictionaryFromRevAuc(raw,datasource):
            DESCR : replaceUndumpableData(raw.data[24]),   \
            LONGDESCR : replaceUndumpableData(raw.data[35]) , \
     # This needs to be put in a standard format and sorted properly.
-           DATE : replaceUndumpableData(d.isoformat()), \
+           DATE : replaceUndumpableData(d.date().isoformat()), \
     # here begin some less-standard fields
            AWARDIDIDV : replaceUndumpableData(raw.data[19]) \
           }
@@ -72,21 +73,25 @@ def loadRevAucFromCSVFile(filename,pattern,adapter,LIMIT_NUM_MATCHING_TRANSACTIO
             for row in reader:
                 tr = RawTransaction("spud")
                 tr.data = row;
-                if (notFoundFirstRecord):
-                    result = False
-                    notFoundFirstRecord = False;
-                else:
-                    bt = BasicTransaction(adapter,tr,basename)
-                    if (pattern):
-                        result = re.search(pattern, bt.getSearchMemento())
+                try:
+                    if (notFoundFirstRecord):
+                        result = False
+                        notFoundFirstRecord = False;
                     else:
-                        result = True
-                if (result):
-                     if (bt.isValidTransaction()):
-                         transactions.append(bt)
-                         i = i + 1
-                if (i+n) > LIMIT_NUM_MATCHING_TRANSACTIONS:
-                    break
+                        bt = BasicTransaction(adapter,tr,basename)
+                        if (pattern):
+                            result = re.search(pattern, bt.getSearchMemento())
+                        else:
+                            result = True
+                    if (result):
+                         if (bt.isValidTransaction()):
+                             transactions.append(bt)
+                             i = i + 1
+                    if (i+n) > LIMIT_NUM_MATCHING_TRANSACTIONS:
+                        break
+                except:
+                    print "Error on this row:"
+                    print repr(row)
         logger.info('number returned:'+str(i))
         return transactions                
     except IOError as e:
