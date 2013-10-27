@@ -20,7 +20,13 @@ import re
 
 import solr
 
+
 import logging
+
+
+from cStringIO import StringIO
+import cPickle as pickle
+
 logger = logging.getLogger('PricesPaidTrans')
 hdlr = logging.FileHandler('../logs/PricesPaidTrans.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
@@ -88,7 +94,7 @@ def applyToLoadedFiles(dirpath,pattern,funToApply,maximumToLoad = ppApiConfig.LI
 
                 logger.info('Total Number Transactions Read From File'+filename \
                                 +str(len(transactions)))
-                funToApply(transactions)
+                funToApply(filename,transactions)
             else:
                 logger.error('Unknown version')
                 raise Exception('Unknown Format Version')
@@ -155,10 +161,31 @@ def searchApiSolr(URLToSolr,pathToData,search_string,psc_pattern,limit=ppApiConf
         transactionDicts = solrCon.query(mainSearch,rows=limit,fl='*,score',deftype='edismax')
     else:
         transactionDicts = solrCon.query(mainSearch,rows=limit,fq=pscSearch,fl='*,score',deftype='edismax')
+    return processSolrResults(transactionDicts)
+
+
+def getP3ids(URLToSolr,pathToData,p3idsPickled,limit=ppApiConfig.LIMIT_NUM_MATCHING_TRANSACTIONS):
+# create a connection to a solr server
+    solrCon = solr.SolrConnection(URLToSolr)
+    localTransactionDir = None
+    
+    transaction = None
+    localTransactionDir = Transaction.TransactionDirector()        
+    p3ids = pickle.loads(p3idsPickled)
+    ids = ["id:"+x for x in p3ids]
+    idSearch = ' OR '.join(ids)
+    logger.info("idSearch"+repr(idSearch))    
+    print "idSearch = " +repr(idSearch)
+    transactionDicts = solrCon.query(idSearch,rows=limit,fl='*,score',deftype='edismax')
+    return processSolrResults(transactionDicts)
+
+def processSolrResults(transactionDicts):
+    # This is a duplication that must be removed with the above.
     for hit in transactionDicts.results:
         # massage the score a little bit --- could normalize to
         # 100% to make a little nicer in the future...
         hit['score'] = int(Decimal(str(hit['score']*100)).quantize(Decimal('1'), rounding=ROUND_UP))
+        hit['p3id'] = hit['id']
         # remove the version and the id which come back
         del hit['id']
         del hit['_version_']
@@ -170,23 +197,7 @@ def searchApiSolr(URLToSolr,pathToData,search_string,psc_pattern,limit=ppApiConf
 
     transactionDicts = transactionDicts.results
     numRows = len(transactionDicts)
-    timeToLoad = "Time To Load Data for "+search_string + ": " +str(time.clock()-t1)
-    logger.info(timeToLoad)
-    print timeToLoad
-
-
-    
-    totalNumber = "Total Number of Transactions in Dataset: "+str(len(transactionDicts))
-    print totalNumber
-    logger.info(totalNumber)
-        
     transactionDicts = transactionDicts[0:LIMIT_NUM_RETURNED_TRANSACTIONS]
     
-    secondTotal = "Second Total Number of Transactions in Dataset: "+str(len(transactionDicts))
-    print secondTotal
-    logger.info(secondTotal)    
     numberedTransactionDict = dict(zip(range(0, len(transactionDicts)),transactionDicts))
-    timeToReturn =  "Time To Return from SearchApi: " +str(time.clock()-timeSearchBegin)
-    print timeToReturn
-    logger.info(timeToReturn)    
     return numberedTransactionDict

@@ -5,7 +5,7 @@ from bottle import response
 
 import json
 
-from SearchApi import searchApiSolr
+from SearchApi import searchApiSolr,getP3ids
 
 from ppApiConfig import PathToDataFiles,URLToSolr,LIMIT_NUM_MATCHING_TRANSACTIONS
 
@@ -37,6 +37,7 @@ def processSearchRequest(user,password,search_string,
     psc_pattern = convertPSCToLegalPattern(psc_pattern);
 
     return searchApiSolr(URLToSolr,PathToDataFiles,search_string,psc_pattern,numRows)
+
 
 @app.route('/hello',method='GET')
 def trivtest():
@@ -73,6 +74,21 @@ def apisolr():
     search_string = request.forms.get('search_string')
     psc_pattern = request.forms.get('psc_pattern')
     return processSearchRequest(user,password,search_string,psc_pattern)
+
+
+def processFromIds(user,password,p3ids,numRows = LIMIT_NUM_MATCHING_TRANSACTIONS):
+    if (not auth.does_authenticate(user,password)):
+        dict = {0: {"status": "BadAuthentication"}}
+        return dict;
+    return getP3ids(URLToSolr,PathToDataFiles,p3ids,numRows)
+
+@app.route('/fromIds',method='POST')
+def fromIds():
+    user = request.forms.get('username')
+    password = request.forms.get('password')
+    p3ids = request.forms.get('p3ids')
+    return processFromIds(user,password,p3ids)
+
 
 
 

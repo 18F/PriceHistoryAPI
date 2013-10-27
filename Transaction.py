@@ -11,7 +11,7 @@ hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 
 logger.setLevel(logging.ERROR)
 
-# These are fields that are more or less "standard"        
+# These are fields that are more or less "standard" 
 UNITS = "unitsOrdered"
 PRICE = "unitPrice"
 AGENCY = "contractingAgency"

@@ -67,7 +67,7 @@ def chunks(l, n):
         
 idcnt = 0;
 
-def loadChunk(chunk):
+def loadChunk(filename,chunk):
     global idcnt
     l = []
     for t in chunk:
@@ -87,7 +87,7 @@ def loadChunk(chunk):
 
         # possibly the addtion of this id field should actually be done
         # when we create the objects!  That would make the class useful!
-        d['id'] = idcnt;
+        d['id'] = filename+"/"+idcnt;
         idcnt = idcnt+1;
 
         l.append(d);
@@ -104,11 +104,11 @@ def loadChunk(chunk):
         logger.error("don't know what went wrong here")
 
     
-def loadSolr(transactions):
+def loadSolr(filename,transactions):
     global idcnt
     chunkedTransactions = list(chunks(transactions, 1000))
     for chunk in chunkedTransactions:
-        loadChunk(chunk)
+        loadChunk(filename,chunk)
 
 # Before we load, we need to delete!
 # This seems a little dangerous, but there is not much we can do.
