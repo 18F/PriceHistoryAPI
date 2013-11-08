@@ -35,10 +35,21 @@ Start Jetty in the background redirecting to a log file.
 
 Scp solrpy-0.9.5 to the box and exute “python setup.py install” in its directory.
 
+Parallel to PricesPaidAPI, create directories named:
+
+* logs
+* configuration
+
+Run "python authbuilder.py" to generate some random passwords and a hash file.  Save the password file for yourself and put the hash file on the server where it can be read.
+
+Copy docs/Example.ppApiConfig.py into "ppApiConfig.py" in the PricesPaidAPI directory and set up all the variables there as appropriate.
+
 Execute “python solrlodr.py” in the application directory.
 
 Rewrite the directory in app.wsgi --- I really need to move this out!! That totally sucks!
 
-Restart apache and test.
+
+
+Restart apache and test---you may have to use PricesPaidGUI to test.  I need to create an automated test against the basic API.
 
 Note: I find it easier to do development and debugging work by running bottle directly against PricesPaidGUI, which by default puts it on Port 8080.  However, I run the service api with app_wsgi in apache, which does mean that you have to remember to do an Apache restart if you make a code change.
