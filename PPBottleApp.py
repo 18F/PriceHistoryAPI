@@ -36,6 +36,8 @@ def processSearchRequest(user,password,search_string,
     search_string = convertSearchStringToLegalPattern(search_string);
     psc_pattern = convertPSCToLegalPattern(psc_pattern);
 
+    if (numRows is None):
+        numRows = LIMIT_NUM_MATCHING_TRANSACTIONS;
     return searchApiSolr(URLToSolr,PathToDataFiles,search_string,psc_pattern,numRows)
 
 
@@ -73,7 +75,8 @@ def apisolr():
     password = request.forms.get('password')
     search_string = request.forms.get('search_string')
     psc_pattern = request.forms.get('psc_pattern')
-    return processSearchRequest(user,password,search_string,psc_pattern)
+    max_results = request.forms.get('numRows')
+    return processSearchRequest(user,password,search_string,psc_pattern,max_results)
 
 
 def processFromIds(user,password,p3ids,numRows = LIMIT_NUM_MATCHING_TRANSACTIONS):
