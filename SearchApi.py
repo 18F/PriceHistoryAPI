@@ -13,6 +13,7 @@ import ppApiConfig
 from RevAucAdapter import getDictionaryFromRevAuc,loadRevAucFromCSVFile
 from OS2Adapter import getDictionaryFromOS2,loadOS2FromCSVFile
 from GSAAdvAdapter import getDictionaryFromGSAAdv,loadGSAAdvFromCSVFile
+from LabEquipAdapter import getDictionaryFromLabEquipment,loadLabequipmentFromCSVFile
 
 from os import listdir
 from os.path import isfile, join
@@ -61,7 +62,8 @@ ppApiConfig.LIMIT_NUM_MATCHING_TRANSACTIONS = 1000
 # Note: Eventually, we need to do some sort of auto-loading to get this to work.
 VERSION_ADAPTER_MAP = { '1': [loadRevAucFromCSVFile,getDictionaryFromRevAuc],
                         '2': [loadOS2FromCSVFile,getDictionaryFromOS2],
-                        '3': [loadGSAAdvFromCSVFile,getDictionaryFromGSAAdv] }
+                        '3': [loadGSAAdvFromCSVFile,getDictionaryFromGSAAdv] 
+                        '4': [loadLabequipmentFromCSVFile,getDictionaryFromLabEquipment]}
 
 # This routine needs to become the basis of the SolrLodr...
 
