@@ -36,6 +36,7 @@ from ppApiConfig import PathToDataFiles, MAXIMUM_NUMBER_TO_LOAD
 from RevAucAdapter import getDictionaryFromRevAuc,loadRevAucFromCSVFile
 from OS2Adapter import getDictionaryFromOS2,loadOS2FromCSVFile
 from GSAAdvAdapter import getDictionaryFromGSAAdv,loadGSAAdvFromCSVFile
+from LabEquipAdapter import getDictionaryFromLabEquipment,loadLabequipmentFromCSVFile
 
 
 from os import listdir
