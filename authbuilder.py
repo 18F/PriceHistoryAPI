@@ -16,21 +16,20 @@ def generatePasswords():
     pwds = {}
     hshs = {}
     for i in range(100):
-        # Add password
         username = "user"+str(i)
         # Warning!  This is temporary!  We really want to
-        # create random passwords instead, but we need to
-        # know the passwords to mail them out to people,
+        # create random authenticationsecrets instead, but we need to
+        # know the authenticationsecrets to mail them out to people,
         # So this is just a test.
-        password = "pass"+str(i)
+        authenticationsecret = "pass"+str(i)
 
         length = 13
         chars = string.ascii_letters + string.digits + '!@#$%^&*()'
 
-        password = ''.join(random.choice(chars) for i in range(length))
+        authenticationsecret = ''.join(random.choice(chars) for i in range(length))
 
-        pwds[username] = password
-        hshs[username] = hashlib.sha256(password+P3APISALT).hexdigest()
+        pwds[username] = authenticationsecret
+        hshs[username] = hashlib.sha256(authenticationsecret+P3APISALT).hexdigest()
 
     # Save to disk
     pickle.dump(hshs, open(hsh_file, "wb"))
