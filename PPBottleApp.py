@@ -13,6 +13,15 @@ app = Bottle()
 
 import auth
 
+import logging
+logger = logging.getLogger('PricesPaidTrans')
+hdlr = logging.FileHandler('../logs/PricesPaidTrans.log')
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+hdlr.setFormatter(formatter)
+logger.addHandler(hdlr) 
+logger.setLevel(logging.ERROR)
+
+
 def convertPSCToLegalPattern(str):
     if (str is None) or (str == 'None') or (str == ''):
         return '*';
@@ -32,6 +41,7 @@ def processSearchRequest(user,password,search_string,
                          psc_pattern,numRows = LIMIT_NUM_MATCHING_TRANSACTIONS):
     if (not auth.does_authenticate(user,password)):
         dict = {0: {"status": "BadAuthentication"}}
+        logger.error('Bad Authentication Request '+ repr(user))
         return dict;
     search_string = convertSearchStringToLegalPattern(search_string);
     psc_pattern = convertPSCToLegalPattern(psc_pattern);
@@ -76,12 +86,14 @@ def apisolr():
     search_string = request.forms.get('search_string')
     psc_pattern = request.forms.get('psc_pattern')
     max_results = request.forms.get('numRows')
+    logger.error('Normal post called '+ repr(user))
     return processSearchRequest(user,password,search_string,psc_pattern,max_results)
 
 
 def processFromIds(user,password,p3ids,numRows = LIMIT_NUM_MATCHING_TRANSACTIONS):
     if (not auth.does_authenticate(user,password)):
         dict = {0: {"status": "BadAuthentication"}}
+        logger.error('Bad Authentication Request '+ repr(user))
         return dict;
     return getP3ids(URLToSolr,PathToDataFiles,p3ids,numRows)
 
@@ -90,6 +102,7 @@ def fromIds():
     user = request.forms.get('username')
     password = request.forms.get('password')
     p3ids = request.forms.get('p3ids')
+    logger.error('fromIds post called '+ repr(user))
     return processFromIds(user,password,p3ids)
 
 
