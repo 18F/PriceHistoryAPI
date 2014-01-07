@@ -88,7 +88,7 @@ def loadChunk(filename,chunk):
 
         # possibly the addtion of this id field should actually be done
         # when we create the objects!  That would make the class useful!
-        d['id'] = filename+"/"+str(idcnt);
+        d['id'] = filename+"_"+str(idcnt);
         idcnt = idcnt+1;
 
         l.append(d);
