@@ -4,6 +4,7 @@ from bottle import Bottle, run, template,request,TEMPLATE_PATH,static_file
 from bottle import response
 
 import json
+import os
 
 from SearchApi import searchApiSolr,getP3ids
 
@@ -21,6 +22,7 @@ hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 
 logger.setLevel(logging.ERROR)
 
+P3APISALT = None
 
 def convertPSCToLegalPattern(str):
     if (str is None) or (str == 'None') or (str == ''):
@@ -39,7 +41,10 @@ def convertSearchStringToLegalPattern(str):
 
 def processSearchRequest(user,password,search_string,
                          psc_pattern,numRows = LIMIT_NUM_MATCHING_TRANSACTIONS):
-    if (not auth.does_authenticate(user,password)):
+    global P3APISALT
+    if (P3APISALT is None):
+        P3APISALT=os.environ.get("P3APISALT")
+    if (not auth.does_authenticate(user,password,P3APISALT)):
         dict = {0: {"status": "BadAuthentication"}}
         logger.error('Bad Authentication Request '+ repr(user))
         return dict;
@@ -89,9 +94,11 @@ def apisolr():
     logger.error('Normal post called '+ repr(user))
     return processSearchRequest(user,password,search_string,psc_pattern,max_results)
 
-
 def processFromIds(user,password,p3ids,numRows = LIMIT_NUM_MATCHING_TRANSACTIONS):
-    if (not auth.does_authenticate(user,password)):
+    global P3APISALT
+    if (P3APISALT is None):
+        P3APISALT=os.environ.get("P3APISALT")
+    if (not auth.does_authenticate(user,password,P3APISALT)):
         dict = {0: {"status": "BadAuthentication"}}
         logger.error('Bad Authentication Request '+ repr(user))
         return dict;

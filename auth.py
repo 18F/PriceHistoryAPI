@@ -7,7 +7,7 @@ import LogActivity
 
 import pickle
 import hashlib
-from ppApiConfig import RelativePathToHashesFile,P3APISALT,TokenTimeout
+from ppApiConfig import RelativePathToHashesFile,TokenTimeout
 
 hashes = {}
 
@@ -29,7 +29,7 @@ def record_bad_login(username):
         GLOBAL_BAD_LOGIN[username][0] = GLOBAL_BAD_LOGIN[username][0]+1
         GLOBAL_BAD_LOGIN[username][1] = datetime.datetime.now()
 
-def does_authenticate(username,password):
+def does_authenticate(username,password,p3apisalt):
     hashes = loadHashes()
     if username in GLOBAL_BAD_LOGIN:
         timenow = datetime.datetime.now()
@@ -50,7 +50,7 @@ def does_authenticate(username,password):
         LogActivity.logBadCredentials(username)
         record_bad_login(username)
         return False;
-    if hashes[username] == hashlib.sha256(password+P3APISALT).hexdigest():
+    if hashes[username] == hashlib.sha256(password+p3apisalt).hexdigest():
         return True;
     else:
         LogActivity.logBadCredentials(username)
