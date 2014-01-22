@@ -12,7 +12,7 @@ from ppApiConfig import PathToDataFiles,URLToSolr,LIMIT_NUM_MATCHING_TRANSACTION
 
 app = Bottle()
 
-import auth
+import P3Auth.auth
 
 import logging
 logger = logging.getLogger('PricesPaidTrans')
@@ -44,9 +44,26 @@ def processSearchRequest(user,password,search_string,
     global P3APISALT
     if (P3APISALT is None):
         P3APISALT=os.environ.get("P3APISALT")
-    if (not auth.does_authenticate(user,password,P3APISALT)):
+    if (not P3Auth.auth.does_authenticate(user,password,P3APISALT)):
         dict = {0: {"status": "BadAuthentication"}}
         logger.error('Bad Authentication Request '+ repr(user))
+        return dict;
+    search_string = convertSearchStringToLegalPattern(search_string);
+    psc_pattern = convertPSCToLegalPattern(psc_pattern);
+
+    if (numRows is None):
+        numRows = LIMIT_NUM_MATCHING_TRANSACTIONS;
+    return searchApiSolr(URLToSolr,PathToDataFiles,search_string,psc_pattern,numRows)
+
+def processSearchRequestSession(session,acsrf,search_string,
+                         psc_pattern,numRows = LIMIT_NUM_MATCHING_TRANSACTIONS):
+    global P3APISALT
+    if (P3APISALT is None):
+        P3APISALT=os.environ.get("P3APISALT")
+# Here we need to use session and acsrf
+    if (not P3Auth.auth.is_valid_acsrf(session,acsrf)):
+        dict = {0: {"status": "BadAuthentication"}}
+        logger.error('Bad Authentication Request '+ repr(session))
         return dict;
     search_string = convertSearchStringToLegalPattern(search_string);
     psc_pattern = convertPSCToLegalPattern(psc_pattern);
@@ -84,6 +101,21 @@ def apisolr():
     return processSearchRequest(user,password,
                                 search_string,psc_pattern,numRows)
 
+@app.route('/session',method='GET')
+def apisolr():
+    session = request.query.get('p3session_id')
+    acsrf = request.query.get('p3acsrf')
+    numRows = request.query.get('numRows')
+    search_string = request.query.get('search_string')
+    psc_pattern = request.query.get('psc_pattern')
+    if (request.query.callback):
+        response.content_type = "application/javascript"
+        return jsonp(request,
+                     processSearchRequestSession(session,acsrf,
+                                          search_string,psc_pattern,numRows))
+    return processSearchRequestSession(session,acsrf,
+                                search_string,psc_pattern,numRows)
+
 @app.route('/',method='POST')
 def apisolr():
     user = request.forms.get('username')
@@ -98,7 +130,7 @@ def processFromIds(user,password,p3ids,numRows = LIMIT_NUM_MATCHING_TRANSACTIONS
     global P3APISALT
     if (P3APISALT is None):
         P3APISALT=os.environ.get("P3APISALT")
-    if (not auth.does_authenticate(user,password,P3APISALT)):
+    if (not P3Auth.auth.does_authenticate(user,password,P3APISALT)):
         dict = {0: {"status": "BadAuthentication"}}
         logger.error('Bad Authentication Request '+ repr(user))
         return dict;
