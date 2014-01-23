@@ -1,7 +1,3 @@
-# note: This file is duplcated in
-# PricesPaidGUI, suggesting it should break it out 
-# into a shared library of some kind.
-
 import logging
 
 logger = logging.getLogger('ActivityLogger')
@@ -16,11 +12,17 @@ logger.setLevel(logging.INFO)
 def logBadCredentials(username):
     logger.info("Bad AuthenticationAttempt : "+username)
 
+def logTooManyLoginAttempts(username):
+    logger.info("TooManyLoginAttempts : "+username)
+
 def logMissingSession(session_id):
     logger.info("Session id missing : "+session_id)
 
 def logTimeout(session_id):
     logger.info("Session id timed out : "+session_id)
+
+def logFeedback(session_id):
+    logger.info("Feedback submitted : "+session_id)
 
 def logSessionBegin(username,session_id):
     logger.info("SessionBegins : "+username+" : "+session_id)
@@ -29,7 +31,10 @@ def logPageTurn(session_id,page):
     logger.info("PageTurn : "+session_id+" : "+page)
 
 def logSearchBegun(session_id,psc_pattern,search_string):
-    logger.info("SearchBegun : "+session_id+" : "+psc_pattern+" : "+search_string)
+    logger.info("SearchBegun : "+session_id+" : "+str(psc_pattern)+" : "+str(search_string))
 
 def logSearchDone(session_id,psc_pattern,search_string):
-    logger.info("SearchDone  : "+session_id+" : "+psc_pattern+" : "+search_string)
+    logger.info("SearchDone  : "+session_id+" : "+str(psc_pattern)+" : "+str(search_string))
+
+def logDebugInfo(info):
+    logger.info("Debug Info : "+info)
