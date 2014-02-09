@@ -28,7 +28,6 @@ logger.addHandler(hdlr)
 logger.setLevel(logging.ERROR)
 
 P3APISALT = None
-PYCAS_SECRET = None
 
 def convertPSCToLegalPattern(str):
     if (str is None) or (str == 'None') or (str == ''):
@@ -48,11 +47,8 @@ def convertSearchStringToLegalPattern(str):
 def processSearchRequest(user,password,search_string,
                          psc_pattern,numRows = LIMIT_NUM_MATCHING_TRANSACTIONS):
     global P3APISALT
-    global PYCAS_SECRET
     if (P3APISALT is None):
         P3APISALT=os.environ.get("P3APISALT")
-    if (PYCAS_SECRET is None):
-        PYCAS_SECRET=os.environ.get("PYCAS_SECRET")
     if (not P3Auth.auth.does_authenticate(user,password,P3APISALT)):
         dict = {0: {"status": "BadAuthentication"}}
         logger.error('Bad Authentication Request '+ repr(user))
