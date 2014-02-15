@@ -57,5 +57,15 @@ CAS_LEVEL_OF_ASSURANCE_PREDICATE_LOA2_AND_PIV = lambda loa,piv: {
     ("urn:max:fips-201-pivcard" == piv)
 
 }
-CAS_LEVEL_OF_ASSURANCE_PREDICATE = CAS_LEVEL_OF_ASSURANCE_PREDICATE_LOA2_AND_PIV
+CAS_PIV_CARD = lambda loa,piv: {
+   ("urn:max:fips-201-pivcard" == piv)
+}
+CAS_PASSWORD_OR_PIV = lambda loa, piv: {
+   ("urn:max:fips-201-pivcard" == piv)
+   or
+   ("urn:oasis:names:tc:SAML:1.0:am:password" == piv)
+}
+CAS_LEVEL_3 = lambda loa, piv: {
+   ("urn:max:am:secureplus:federated-saml2:assurancelevel3" == piv)
+}
 
