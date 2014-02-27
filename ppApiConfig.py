@@ -68,4 +68,5 @@ CAS_PASSWORD_OR_PIV = lambda loa, piv: {
 CAS_LEVEL_3 = lambda loa, piv: {
    ("urn:max:am:secureplus:federated-saml2:assurancelevel3" == piv)
 }
+CAS_LEVEL_OF_ASSURANCE_PREDICATE = CAS_PASSWORD_OR_PIV
 

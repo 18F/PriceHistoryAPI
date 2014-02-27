@@ -37,6 +37,7 @@ from RevAucAdapter import getDictionaryFromRevAuc,loadRevAucFromCSVFile
 from OS2Adapter import getDictionaryFromOS2,loadOS2FromCSVFile
 from GSAAdvAdapter import getDictionaryFromGSAAdv,loadGSAAdvFromCSVFile
 from LabEquipAdapter import getDictionaryFromLabEquipment,loadLabequipmentFromCSVFile
+from USASpendingAdapter import getDictionaryFromUSASpending,loadUSASpendingFromCSVFile
 
 
 from os import listdir

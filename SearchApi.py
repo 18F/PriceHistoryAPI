@@ -14,6 +14,7 @@ from RevAucAdapter import getDictionaryFromRevAuc,loadRevAucFromCSVFile
 from OS2Adapter import getDictionaryFromOS2,loadOS2FromCSVFile
 from GSAAdvAdapter import getDictionaryFromGSAAdv,loadGSAAdvFromCSVFile
 from LabEquipAdapter import getDictionaryFromLabEquipment,loadLabequipmentFromCSVFile
+from USASpendingAdapter import getDictionaryFromUSASpending,loadUSASpendingFromCSVFile
 
 from os import listdir
 from os.path import isfile, join
@@ -63,7 +64,8 @@ ppApiConfig.LIMIT_NUM_MATCHING_TRANSACTIONS = 1000
 VERSION_ADAPTER_MAP = { '1': [loadRevAucFromCSVFile,getDictionaryFromRevAuc],
                         '2': [loadOS2FromCSVFile,getDictionaryFromOS2],
                         '3': [loadGSAAdvFromCSVFile,getDictionaryFromGSAAdv],
-                        '4': [loadLabequipmentFromCSVFile,getDictionaryFromLabEquipment]}
+                        '4': [loadLabequipmentFromCSVFile,getDictionaryFromLabEquipment],
+                        '5': [loadUSASpendingFromCSVFile,getDictionaryFromUSASpending]}
 
 # This routine needs to become the basis of the SolrLodr...
 
@@ -79,8 +81,8 @@ def applyToLoadedFiles(dirpath,pattern,funToApply,maximumToLoad = ppApiConfig.LI
             break
         version = Transaction.parseFormatVersion(filename)
         if not version:
-             logger.error('File in wrong format: '+dirpath+filename)
-             print 'File in wrong format: '+dirpath+filename
+             logger.error('File in wrong format: '+dirpath+'/'+filename)
+             print 'File in wrong format: '+dirpath+'/'+filename
         else:
             # RevAuc data has number 1
             # This would be better with a functional "cond" type operator
