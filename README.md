@@ -100,3 +100,9 @@ The basic idea of this project is to have many such .csv files using many differ
 Note that the cookedData directory in this project is NOT in the place it is configured to be
 in ppcofig.example.py.  I have added it here only as an example.
 
+In that directory you fill find the file FY14TX-pppifver-USASpending-5-0-0-0-1.csv.  This file 
+is simply a renamed (and unchanged) export from the site USASpending.gov, in this case for 
+fiscal year 2014 and the state of Texas.  This is a small data file, but when placed in the
+correct (not example) cookedData directory, will allow the execution of "python SolrLodr.py"
+to load 23K records of completely public data for testing your own site.
+
