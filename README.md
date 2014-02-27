@@ -28,20 +28,31 @@ market research should be used as well.
 
 ## STATUS
 
-Robert L. Read is the main engineer on this project, and has been working about 7 weeks on it as of August
-24th.  It is now in demo-prototype mode, and is moving toward a pilot launch of 100 buyers within the
-government.  At the time of this writing it is probably not documented well enough to use easily, though
+Robert L. Read is the main engineer on this project, which was begun as Presidentional Innovation Fellowship
+project in July of 2013. At the time of this writing it is probably not documented well enough to use easily, though
 of course I will respond <read.robert@gmail.com> to any questions.
 
-This code is therefore at present quite specialized, and is unlikely to be valuable to anybody not directly
-interested in the project, except perhaps as an example.
+The code is currently in use within the Federal government in a Beta mode, with a plan to roll out to many
+federal procurement officers by the summer of 2014.  That website, however, will have data that the government
+considers sensitive, and will be available only to federal employees.
+
+However, this code is in the public domain within the United States.  I would love to see it used by someobody else---
+for example, a city or state, that wanted to present a simple research tool for price transactions, or to provide their
+citizens transparency into their purchases.
+
 
 ## WHY YOU MIGHT CARE
 
-Today, this project is highly specialized, but we would like to factor out the "Prices Paid" part of this
+You might find some value in this code if you want an example of using Python code to load a SOLR index.
+
+You might find some value if you want to see an approach to adapting mulitple file formats to loading into 
+a single harmonized schema.
+
+Today, this project is specialized, but we would like to factor out the "Prices Paid" part of this
 to make it a more general tool---a "Simple Heterogeneous Data Visualizer".  You can help with that!
 
-If you are interested in using SOLR from python, this might be valuable as an example.
+You might use this code as a starting point if you want to provide an API to a SOLR index but don't want to
+allow direct access against SOLR for security or other reasons.
 
 ## WHAT IT DOES
 
@@ -57,8 +68,13 @@ In docs/example.SOLR.schema.xml is an example of the schema.xml file that I use.
 Although we are presenting an Api which (when hosted) will let any programmer do as they please in 
 querying the haronized databases, most users will use the GUI.
 
-The GUI is in a project called PricesPaid GUI which has not yet been loaded to GitHub, though I 
-hope to do so soon.
+The GUI is in a project called PricesPaid GUI.  That project has the best installation instructions, although this
+project is completely independent of that one.  PricesPaidGUI uses PricesPaidAPI but PricesPaidAPI depends only on 
+the mode P3Auth (also one of my github repos) and open-source software which I did not write, mentioned at 
+PricesPaidGUI.
+
+The easiest way to understand what PricesPaidAPI does and play with it is to install PricesPaidGUI---but that 
+is not strictly necessary.
 
 ## THE PHILOSOPHY
 
@@ -74,35 +90,28 @@ But seriously, folks, the idea is to make it work as much like Google as possibl
 some other purpose.
 * We need to write a push API so that new data can be pushed rather than delivered through a 
 CSV file as today.
-* I'm actively trying to make the search more useful by allowing search of every field.  I think
-I know how to do this, so if you tackle this you are probably duplicating my effort---but hey, 
-nature works by lots of duplication of effort.
 
-## WHY THIS CODE WILL BE HARD TO USE AT PRESENT
+## USING THE PROJECT
 
-* The installation instructionds in docs/INSTALLATION.txt is incomplete.
-* The sister project PricesPaidGUI is availabel but immature.
-
-There is a file, ppconfig.example.py.  I name this ppconfig.py and place it above the main 
-PricesPaidAPI directory, because it is shared by the sister project PricesPaidGUI.  It is included
-here as an example.  To get the system to work you will have to have change ppconfig.example.py
-as appropriate and move it somewhere where app.wsgi can find it.  
-
-Note that a very poor example file exists in the "cookedData" file.  This is a highly redacted and
-inaccurate version containing only one record for example purposes.  I hacked this from a file
-I am actually using.  The basic approach of PricesPaidAPI at present is to read .CSV files like 
+Note that abn example file exists in the "cookedData" file. In that directory you fill find the 
+file FY14TX-pppifver-USASpending-5-0-0-0-1.csv.  This file 
+is simply a renamed (and unchanged) export from the site USASpending.gov, in this case for 
+fiscal year 2014 and the state of Texas. It contains 23K records of completely public data 
+for testing this code.  Note that the "Units" field is constructed by this adapter, because
+USASpending.gov does not actually contain "number of units purchased data".
+ The basic approach of PricesPaidAPI at present is to read .CSV files like 
 that one.  Note that name of the file follows a strict convention that defines which adapter to use.
 If you would like to use this project for something else, create your own adapter, possibly using
 the same filename/versioning convention.
 
 The basic idea of this project is to have many such .csv files using many different adapters.
+I would love for someone to donate an additional public data file to this project.  The Federal government has
+many such files but considers them confidential.
 
 Note that the cookedData directory in this project is NOT in the place it is configured to be
 in ppcofig.example.py.  I have added it here only as an example.
 
-In that directory you fill find the file FY14TX-pppifver-USASpending-5-0-0-0-1.csv.  This file 
-is simply a renamed (and unchanged) export from the site USASpending.gov, in this case for 
-fiscal year 2014 and the state of Texas.  This is a small data file, but when placed in the
+  This is a small data file, but when placed in the
 correct (not example) cookedData directory, will allow the execution of "python SolrLodr.py"
 to load 23K records of completely public data for testing your own site.
 
