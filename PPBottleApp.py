@@ -45,7 +45,7 @@ def convertSearchStringToLegalPattern(str):
         return str;
 
 def processSearchRequest(user,password,search_string,
-                         psc_pattern,numRows = LIMIT_NUM_MATCHING_TRANSACTIONS):
+                         psc_pattern,clientData,numRows = LIMIT_NUM_MATCHING_TRANSACTIONS):
     global P3APISALT
     if (P3APISALT is None):
         P3APISALT=os.environ.get("P3APISALT")
@@ -58,10 +58,13 @@ def processSearchRequest(user,password,search_string,
 
     if (numRows is None):
         numRows = LIMIT_NUM_MATCHING_TRANSACTIONS;
-    return searchApiSolr(URLToSolr,PathToDataFiles,search_string,psc_pattern,numRows)
+    result = searchApiSolr(URLToSolr,PathToDataFiles,search_string,psc_pattern,numRows)
+    if clientData:
+        result["clientdata"] = clientData
+    return result
 
 def processSearchRequestSession(session,acsrf,search_string,
-                         psc_pattern,numRows = LIMIT_NUM_MATCHING_TRANSACTIONS):
+                         psc_pattern,clientData,numRows = LIMIT_NUM_MATCHING_TRANSACTIONS):
     global P3APISALT
 
     P3Auth.LogActivity.logDebugInfo("processSearchRequestSession fired:"+repr(session))
@@ -79,7 +82,10 @@ def processSearchRequestSession(session,acsrf,search_string,
 
     if (numRows is None):
         numRows = LIMIT_NUM_MATCHING_TRANSACTIONS;
-    return searchApiSolr(URLToSolr,PathToDataFiles,search_string,psc_pattern,numRows)
+    result = searchApiSolr(URLToSolr,PathToDataFiles,search_string,psc_pattern,numRows)
+    if clientData:
+        result["clientdata"] = clientData
+    return result;
 
 
 @app.route('/hello',method='GET')
@@ -99,6 +105,7 @@ def jsonp(request, dictionary):
 def apisolr():
     user = request.query.get('p3username')
     password = request.query.get('p3password')
+    clientData = request.query.get('clientdata')
     numRows = request.query.get('numRows')
     search_string = request.query.get('search_string')
     psc_pattern = request.query.get('psc_pattern')
@@ -106,34 +113,36 @@ def apisolr():
         response.content_type = "application/javascript"
         return jsonp(request,
                      processSearchRequest(user,password,
-                                          search_string,psc_pattern,numRows))
+                                          search_string,psc_pattern,clientData,numRows))
     return processSearchRequest(user,password,
-                                search_string,psc_pattern,numRows)
+                                search_string,psc_pattern,clientData,numRows)
 
 @app.route('/session',method='GET')
 def apisolr():
     session = request.query.get('p3session_id')
     acsrf = request.query.get('p3acsrf')
     numRows = request.query.get('numRows')
+    clientData = request.query.get('clientdata')
     search_string = request.query.get('search_string')
     psc_pattern = request.query.get('psc_pattern')
     if (request.query.callback):
         response.content_type = "application/javascript"
         return jsonp(request,
                      processSearchRequestSession(session,acsrf,
-                                          search_string,psc_pattern,numRows))
+                                          search_string,psc_pattern,clientData,numRows))
     return processSearchRequestSession(session,acsrf,
-                                search_string,psc_pattern,numRows)
+                                search_string,psc_pattern,clientData,numRows)
 
 @app.route('/',method='POST')
 def apisolr():
     user = request.forms.get('username')
     password = request.forms.get('password')
+    clientData = request.forms.get('clientdata')
     search_string = request.forms.get('search_string')
     psc_pattern = request.forms.get('psc_pattern')
     max_results = request.forms.get('numRows')
     logger.error('Normal post called '+ repr(user))
-    return processSearchRequest(user,password,search_string,psc_pattern,max_results)
+    return processSearchRequest(user,password,search_string,psc_pattern,clientData,max_results)
 
 def processFromIds(user,password,p3ids,numRows = LIMIT_NUM_MATCHING_TRANSACTIONS):
     global P3APISALT
