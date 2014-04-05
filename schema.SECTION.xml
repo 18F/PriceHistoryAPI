@@ -1,0 +1,22 @@
+
+<!-- BEGIN fields for MorrisDataDecorator! -->
+   <field name="document_type" type="text_general" indexed="true" stored="true"
+ multiValued="false"/>
+   <field name="decoration_name" type="text_general" indexed="true" stored="true" multiValued="false"/>
+   <field name="content_name" type="text_general" indexed="true" stored="true" multiValued="false"/>
+   <field name="decoration" type="text_general" indexed="true" stored="true" multiValued="false"/>
+   <field name="decorated_content" type="text_general" indexed="true" stored="true" multiValued="false"/>
+   <field name="client_data" type="text_general" indexed="true" stored="true" multiValued="false"/>
+<!-- END fields for MorrisDataDecorator! -->
+
+<!-- BEGIN actual standard fields! -->
+   <field name="unitsOrdered" type="text_general" indexed="true" stored="true" multiValued="false"/>
+   <field name="unitPrice" type="text_general" indexed="true" stored="true" multiValued="false"/>
+   <field name="contractingAgency" type="text_general" indexed="true" stored="true" multiValued="false"/>
+   <field name="vendor" type="text_general" indexed="true" stored="true" multiValued="false"/>
+   <field name="psc" type="text_general" indexed="true" stored="true" multiValued="false"/>
+   <field name="productDescription" type="text_general" indexed="true" stored="true" multiValued="false"/>
+   <field name="longDescription" type="text_general" indexed="true" stored="true" multiValued="false"/>
+   <field name="orderDate" type="text_general" indexed="true" stored="true" multiValued="false"/>
+   <field name="awardIdIdv" type="text_general" indexed="true" stored="true" multiValued="false"/>
+<!-- END actual standard fields! -->
