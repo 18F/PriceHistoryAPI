@@ -9,7 +9,7 @@ This is part of the PricesPaid (P3) Project
 The PricesPaid (P3) project is market research tool to allow search of purchase transactions.  It is modularized into 4 github repositories:
 
 1. [PricesPaidGUI](https://github.com/XGov/PricesPaidGUI), 
-2. [PricesPaidAPI](https://github.com/presidential-innovation-fellows), 
+2. [PricesPaidAPI](https://github.com/presidential-innovation-fellows/PricesPaidAPI), 
 3. [MorrisDataDecorator](https://github.com/presidential-innovation-fellows/MorrisDataDecorator), 
 4. [P3Auth](https://github.com/XGov/P3Auth).  
 
