@@ -28,18 +28,6 @@ import time
 
 from ppApiConfig import PathToDataFiles, MAXIMUM_NUMBER_TO_LOAD
 
-# Note: For now, these are explict imports.
-# Evntually, we want to make this automatic, and essentially
-# create a dynamic array of adapters and loaders based on
-# what we find in some directory so that it is easily
-# extendable.  But that would be over-engineering if we did it now.
-from RevAucAdapter import getDictionaryFromRevAuc,loadRevAucFromCSVFile
-from OS2Adapter import getDictionaryFromOS2,loadOS2FromCSVFile
-from GSAAdvAdapter import getDictionaryFromGSAAdv,loadGSAAdvFromCSVFile
-from LabEquipAdapter import getDictionaryFromLabEquipment,loadLabequipmentFromCSVFile
-from USASpendingAdapter import getDictionaryFromUSASpending,loadUSASpendingFromCSVFile
-
-
 from os import listdir
 from os.path import isfile, join
 import re

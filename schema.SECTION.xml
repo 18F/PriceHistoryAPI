@@ -20,3 +20,8 @@
    <field name="orderDate" type="text_general" indexed="true" stored="true" multiValued="false"/>
    <field name="awardIdIdv" type="text_general" indexed="true" stored="true" multiValued="false"/>
 <!-- END actual standard fields! -->
+
+
+
+<!-- This is critical, put this with the other copyField sections in the schema.xml -->
+  <copyField source="*" dest="text"/>
