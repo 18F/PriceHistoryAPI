@@ -7,7 +7,7 @@ import urllib
 import urlparse
 import json
 import os
-import P3Auth.LogActivity
+import PriceHistoryAuth.LogActivity
 
 from SearchApi import searchApiSolr,getP3ids
 
@@ -16,8 +16,8 @@ from ppApiConfig import PathToDataFiles,URLToSolr,LIMIT_NUM_MATCHING_TRANSACTION
 
 app = Bottle()
 
-import P3Auth.auth
-import P3Auth.pycas
+import PriceHistoryAuth.auth
+import PriceHistoryAuth.pycas
 
 import logging
 logger = logging.getLogger('PricesPaidTrans')
@@ -49,7 +49,7 @@ def processSearchRequest(user,password,search_string,
     global P3APISALT
     if (P3APISALT is None):
         P3APISALT=os.environ.get("P3APISALT")
-    if (not P3Auth.auth.does_authenticate(user,password,P3APISALT)):
+    if (not PriceHistoryAuth.auth.does_authenticate(user,password,P3APISALT)):
         dict = {0: {"status": "BadAuthentication"}}
         logger.error('Bad Authentication Request '+ repr(user))
         return dict;
@@ -67,13 +67,13 @@ def processSearchRequestSession(session,acsrf,search_string,
                          psc_pattern,clientData,numRows = LIMIT_NUM_MATCHING_TRANSACTIONS):
     global P3APISALT
 
-    P3Auth.LogActivity.logDebugInfo("processSearchRequestSession fired:"+repr(session))
+    PriceHistoryAuth.LogActivity.logDebugInfo("processSearchRequestSession fired:"+repr(session))
 
     if (P3APISALT is None):
         P3APISALT=os.environ.get("P3APISALT")
 # Here we need to use session and acsrf
-    if (not P3Auth.auth.is_valid_acsrf(session,acsrf)):
-        P3Auth.LogActivity.logDebugInfo("not valid:"+repr(session)+repr(acsrf))
+    if (not PriceHistoryAuth.auth.is_valid_acsrf(session,acsrf)):
+        PriceHistoryAuth.LogActivity.logDebugInfo("not valid:"+repr(session)+repr(acsrf))
         dict = {0: {"status": "BadAuthentication"}}
         logger.error('Bad Authentication Request '+ repr(session))
         return dict;
@@ -148,7 +148,7 @@ def processFromIds(user,password,p3ids,numRows = LIMIT_NUM_MATCHING_TRANSACTIONS
     global P3APISALT
     if (P3APISALT is None):
         P3APISALT=os.environ.get("P3APISALT")
-    if (not P3Auth.auth.does_authenticate(user,password,P3APISALT)):
+    if (not PriceHistoryAuth.auth.does_authenticate(user,password,P3APISALT)):
         dict = {0: {"status": "BadAuthentication"}}
         logger.error('Bad Authentication Request '+ repr(user))
         return dict;
@@ -176,40 +176,40 @@ mapRequestToReturnURL = {}
 @app.route('/ReturnSessionViaMax/<requestId:int>')
 def returnSessionViaMax(requestId):
     global mapRequestToReturnURL
-    P3Auth.LogActivity.logDebugInfo("return ID:"+repr(requestId))
+    PriceHistoryAuth.LogActivity.logDebugInfo("return ID:"+repr(requestId))
 
-    P3Auth.LogActivity.logPageTurn("nosession","ReturnMaxLoginPage")
+    PriceHistoryAuth.LogActivity.logPageTurn("nosession","ReturnMaxLoginPage")
 
     ticket = request.query['ticket']
-    P3Auth.LogActivity.logDebugInfo("MAX AUTHENTICATED ticket :"+ticket)
+    PriceHistoryAuth.LogActivity.logDebugInfo("MAX AUTHENTICATED ticket :"+ticket)
 
     amendedReturnURL = CAS_CREATE_SESSION_IF_AUTHENTICATED+"/"+repr(requestId)
 
-    status, id, cookie = P3Auth.pycas.check_authenticated_p(CAS_LEVEL_OF_ASSURANCE_PREDICATE,ticket,CAS_SERVER, 
+    status, id, cookie = PriceHistoryAuth.pycas.check_authenticated_p(CAS_LEVEL_OF_ASSURANCE_PREDICATE,ticket,CAS_SERVER, 
                                                      amendedReturnURL, lifetime=None, secure=1, protocol=2, path="/", opt="")
-    maxAuthenticatedProperly = (status == P3Auth.pycas.CAS_OK);
+    maxAuthenticatedProperly = (status == PriceHistoryAuth.pycas.CAS_OK);
 
-    P3Auth.LogActivity.logDebugInfo("MAX AUTHENTICATED WITH ID:"+id)
+    PriceHistoryAuth.LogActivity.logDebugInfo("MAX AUTHENTICATED WITH ID:"+id)
 
-    P3Auth.LogActivity.logDebugInfo("ReturnSessionViaMax authenticated :"+repr(maxAuthenticatedProperly))
+    PriceHistoryAuth.LogActivity.logDebugInfo("ReturnSessionViaMax authenticated :"+repr(maxAuthenticatedProperly))
     if (maxAuthenticatedProperly):
         sendTokensBackTo = mapRequestToReturnURL[requestId]
         response.status = 303 
         domain,path = urlparse.urlparse(CAS_RETURN_SERVICE_URL)[1:3]
         secure=1
-        setCookieCommand = P3Auth.pycas.make_pycas_cookie("gateway",domain,path,secure)
+        setCookieCommand = PriceHistoryAuth.pycas.make_pycas_cookie("gateway",domain,path,secure)
         strip = setCookieCommand[12:]
 # We will set this cookie to make it easier for the user
 # to avoid multiple logins---but technically, this is not 
 # what is being used and the user, who is probably using the API,
 # will want to ignore this.
         response.set_header('Set-Cookie', strip)
-        ses_id = P3Auth.auth.create_session_id()
-        acsrf = P3Auth.auth.get_acsrf(ses_id)
+        ses_id = PriceHistoryAuth.auth.create_session_id()
+        acsrf = PriceHistoryAuth.auth.get_acsrf(ses_id)
         response.add_header('Location',sendTokensBackTo+"?p3session_id="+ses_id+"&p3acsrf="+acsrf)
         return "You will be redirected."+strip+sendTokensBackTo
     else:
-        P3Auth.LogActivity.logBadCredentials("Failed to Authenticate with Max")
+        PriceHistoryAuth.LogActivity.logBadCredentials("Failed to Authenticate with Max")
         return template('Login',message='Improper Credentials.',
                     footer_html=FOOTER_HTML,
                     extra_login_methods=EXTRA_LOGIN_METHODS,
@@ -217,7 +217,7 @@ def returnSessionViaMax(requestId):
 
 @app.route('/GetTokensViaMax')
 def getTokensViaMax():
-    P3Auth.LogActivity.logPageTurn("nosession","GetTokensViaMax")
+    PriceHistoryAuth.LogActivity.logPageTurn("nosession","GetTokensViaMax")
     global requestNumber
     global mapRequestToReturnURL
 
@@ -225,7 +225,7 @@ def getTokensViaMax():
     response.status = 303 
     domain,path = urlparse.urlparse(CAS_RETURN_SERVICE_URL)[1:3]
     secure=1
-    setCookieCommand = P3Auth.pycas.make_pycas_cookie("gateway",domain,path,secure)
+    setCookieCommand = PriceHistoryAuth.pycas.make_pycas_cookie("gateway",domain,path,secure)
     strip = setCookieCommand[12:]
     response.set_header('Set-Cookie', strip)
     opt=""
@@ -236,7 +236,7 @@ def getTokensViaMax():
     amendedReturnURL = CAS_CREATE_SESSION_IF_AUTHENTICATED+"/"+repr(requestNumber)
     mapRequestToReturnURL[requestNumber] = sendTokensBackTo
     requestNumber = requestNumber + 1
-    location = P3Auth.pycas.get_url_redirect_as_string(CAS_SERVER,amendedReturnURL,opt,secure)
+    location = PriceHistoryAuth.pycas.get_url_redirect_as_string(CAS_SERVER,amendedReturnURL,opt,secure)
     response.set_header('Location',location)
     return "You will be redirected."+strip+location
 
