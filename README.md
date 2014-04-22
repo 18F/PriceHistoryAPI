@@ -3,19 +3,20 @@ PricesPaidAPI
 
 Backend and web service for searching a database imported from CSV files (someday generally, but Prices Paid for now.)
 
-This is part of the PricesPaid (P3) Project
+This is part of the PriceHistory (P3) Project
 --------------------------------------
 
-The PricesPaid (P3) project is market research tool to allow search of purchase transactions.  It is modularized into 4 github repositories:
+The PriceHistory (P3) project is market research tool to allow search of purchase transactions.  It is modularized into 5 github repositories:
 
-1. [PricesPaidGUI](https://github.com/XGov/PricesPaidGUI), 
-2. [PricesPaidAPI](https://github.com/presidential-innovation-fellows/PricesPaidAPI), 
-3. [MorrisDataDecorator](https://github.com/presidential-innovation-fellows/MorrisDataDecorator), 
-4. [P3Auth](https://github.com/XGov/P3Auth).  
+1. [PriceHistoryInstall](https://github.com/18F/PriceHistoryGUI),
+2. [PriceHistoryGUI](https://github.com/18F/PriceHistoryGUI), 
+3. [PriceHistoryAPI](https://github.com/18F/PriceHistoryAPI), 
+4. [MorrisDataDecorator](https://github.com/18F/MorrisDataDecorator), 
+5. [PriceHistoryAuth](https://github.com/18F/PriceHistoryAuth).  
 
-To learn how to install the system, please refer to the documentation in the PricesPaidGUI project.
+To learn how to install the system, please refer PriceHistoryInstall project, which contains a Vagrant install script.  That repo is actively under development in preparation of the Houston Hackathon.
 
-The name "PricesPaid" is descriptive: this project shows you prices that have been paid for things.  However, the name is applied to many projects, so "P3" is the specific name of this project.
+The name "PriceHistory" is descriptive: this project shows you prices that have been paid for things.  However, the name is applied to many projects, so "P3" is the specific name of this project.
 
 
 # INTRODUCTION
@@ -68,12 +69,12 @@ In docs/example.SOLR.schema.xml is an example of the schema.xml file that I use.
 Although we are presenting an Api which (when hosted) will let any programmer do as they please in 
 querying the haronized databases, most users will use the GUI.
 
-The GUI is in a project called PricesPaid GUI.  That project has the best installation instructions, although this
-project is completely independent of that one.  PricesPaidGUI uses PricesPaidAPI but PricesPaidAPI depends only on 
+The GUI is in a project called PriceHistory GUI.  That project has the best installation instructions, although this
+project is completely independent of that one.  PriceHistoryGUI uses PriceHistoryAPI but PriceHistoryAPI depends only on 
 the mode P3Auth (also one of my github repos) and open-source software which I did not write, mentioned at 
-PricesPaidGUI.
+PriceHistoryGUI.
 
-The easiest way to understand what PricesPaidAPI does and play with it is to install PricesPaidGUI---but that 
+The easiest way to understand what PriceHistoryAPI does and play with it is to install PriceHistoryGUI---but that 
 is not strictly necessary.
 
 ## THE PHILOSOPHY
@@ -99,7 +100,7 @@ is simply a renamed (and unchanged) export from the site USASpending.gov, in thi
 fiscal year 2014 and the state of Texas. It contains 23K records of completely public data 
 for testing this code.  Note that the "Units" field is constructed by this adapter, because
 USASpending.gov does not actually contain "number of units purchased data".
- The basic approach of PricesPaidAPI at present is to read .CSV files like 
+ The basic approach of PriceHistoryAPI at present is to read .CSV files like 
 that one.  Note that name of the file follows a strict convention that defines which adapter to use.
 If you would like to use this project for something else, create your own adapter, possibly using
 the same filename/versioning convention.
