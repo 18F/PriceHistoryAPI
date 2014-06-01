@@ -9,6 +9,8 @@ import json
 import os
 import PriceHistoryAuth.LogActivity
 
+from StandardCSVReader import loadFromCSVString,getDictionaryFromStandard
+
 from SearchApi import searchApiSolr,getP3ids
 
 from ppApiConfig import PathToDataFiles,URLToSolr,LIMIT_NUM_MATCHING_TRANSACTIONS,\
@@ -161,6 +163,24 @@ def fromIds():
     p3ids = request.forms.get('p3ids')
     logger.error('fromIds post called '+ repr(user))
     return processFromIds(user,password,p3ids)
+
+
+
+@app.route('/AddCSVFile',method='POST')
+def addCSVFile():
+    user = request.forms.get('username')
+    password = request.forms.get('password')
+    global P3APISALT
+    if (P3APISALT is None):
+        P3APISALT=os.environ.get("P3APISALT")
+    if (not PriceHistoryAuth.auth.does_authenticate(user,password,P3APISALT)):
+        dict = {0: {"status": "BadAuthentication"}}
+        logger.error('Bad Authentication Request '+ repr(user))
+        return dict;
+    csv_file = request.forms.get('csv_file')
+    trans = loadFromCSVString(csv_file,getDictionaryFromStandard)
+    
+    return { 'data': repr(trans) }
 
 
 
