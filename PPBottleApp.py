@@ -8,10 +8,13 @@ import urlparse
 import json
 import os
 import PriceHistoryAuth.LogActivity
+import sys
 
 from StandardCSVReader import loadFromCSVString,getDictionaryFromStandard
 
 from SearchApi import searchApiSolr,getP3ids
+
+from SolrLodr import loadSolr
 
 from ppApiConfig import PathToDataFiles,URLToSolr,LIMIT_NUM_MATCHING_TRANSACTIONS,\
     CAS_SERVER,CAS_PROXY,CAS_RETURN_SERVICE_URL,CAS_LEVEL_OF_ASSURANCE,CAS_CREATE_SESSION_IF_AUTHENTICATED,CAS_LEVEL_OF_ASSURANCE_PREDICATE
@@ -178,9 +181,14 @@ def addCSVFile():
         logger.error('Bad Authentication Request '+ repr(user))
         return dict;
     csv_file = request.forms.get('csv_file')
-    trans = loadFromCSVString(csv_file,getDictionaryFromStandard)
+    filename = "SAMPLEUPLOAD"
+    trans = loadFromCSVString(csv_file,getDictionaryFromStandard,filename)
     
-    return { 'data': repr(trans) }
+    try:
+        loadSolr(filename,trans)
+    except:
+        return "Probably failed: "+repr(sys.exc_info()[0])
+    return "Might have added "+repr(len(trans))+" rows."
 
 
 

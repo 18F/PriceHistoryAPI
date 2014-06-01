@@ -17,31 +17,37 @@ logger.addHandler(hdlr)
 logger.setLevel(logging.ERROR)
 
 def getDictionaryFromStandard(raw,datasource):
-    logger.errr('RAW:'+repr(raw))
+    logger.error('RAW:'+repr(raw.data))
     try:
-        d = datetime.datetime.strptime(raw.data[21].strip(' \t\n\r'),"%m/%d/%Y")
+#        d = datetime.datetime.strptime(raw.data[21].strip(' \t\n\r'),"%m/%d/%Y")
+        d = datetime.datetime.today()
+        logger.error('RAW0:'+replaceUndumpableData(raw.data[0]))
+        logger.error('RAW1:'+replaceUndumpableData(raw.data[1]))
+        logger.error('RAW2:'+replaceUndumpableData(raw.data[2]))
+        logger.error('RAW3:'+replaceUndumpableData(raw.data[3]))
+        logger.error('RAW4:'+replaceUndumpableData(raw.data[4]))
+        logger.error('RAW5:'+replaceUndumpableData(raw.data[5]))
+        logger.error('RAW6:'+replaceUndumpableData(raw.data[6]))
+        logger.error('RAW7:'+replaceUndumpableData(raw.data[7]))
+        logger.error('RAW8:'+replaceUndumpableData(raw.data[8]))
         return { \
-           DATASOURCE : datasource, \
-           UNITS : replaceUndumpableData(raw.data[37]) , \
-           PRICE : replaceUndumpableData(raw.data[38]), \
-           AGENCY : replaceUndumpableData(raw.data[3]) , \
-           VENDOR : replaceUndumpableData(raw.data[29]) , \
-           PSC : replaceUndumpableData(raw.data[13]) ,  \
-           DESCR : replaceUndumpableData(raw.data[24]),   \
-           LONGDESCR : replaceUndumpableData(raw.data[35]) , \
+            UNITS : replaceUndumpableData(raw.data[0]),\
+            PRICE : replaceUndumpableData(raw.data[1]),\
+            AGENCY : replaceUndumpableData(raw.data[2]),\
+            VENDOR : replaceUndumpableData(raw.data[3]),\
+            PSC : replaceUndumpableData(raw.data[4]),\
+            DESCR : replaceUndumpableData(raw.data[5]),\
+            LONGDESCR : replaceUndumpableData(raw.data[6]),\
+            DATE : replaceUndumpableData(raw.data[7]),\
+            AWARDIDIDV  : replaceUndumpableData(raw.data[8]),\
     # This needs to be put in a standard format and sorted properly.
-           DATE : replaceUndumpableData(d.date().isoformat()), \
-    # here begin some less-standard fields
-           AWARDIDIDV : replaceUndumpableData(raw.data[19]) \
+            DATE : replaceUndumpableData(d.date().isoformat()) \
           }
     except:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        traceback.print_exception(exc_type, exc_value, exc_traceback,
-                              limit=2, file=sys.stderr)      
-        logger.error("don't know what went wrong here")
+        logger.error("don't know what went wrong here"+repr(sys.exc_info()[0]))
         return {}
 
-def loadFromCSVString(csv_string,adapter):
+def loadFromCSVString(csv_string,adapter,basename):
         transactions = []
         reader = csv.reader(csv_string.splitlines())
         n = len(transactions)
@@ -52,24 +58,19 @@ def loadFromCSVString(csv_string,adapter):
             tr = RawTransaction("spud")
             tr.data = row;
             try:
-                if (notFoundFirstRecord):
-                    result = False
-                    notFoundFirstRecord = False;
-                else:
-                    bt = BasicTransaction(adapter,tr,basename)
-                    if (pattern):
-                        result = re.search(pattern, bt.getSearchMemento())
-                    else:
-                        result = True
-                if (result):
-                    if (bt.isValidTransaction()):
-                        transactions.append(bt)
-                        i = i + 1
-                    if (i+n) > LIMIT_NUM_MATCHING_TRANSACTIONS:
-                        break
+                bt = BasicTransaction(adapter,tr,basename)
+                logger.error('BT:'+repr(bt))
+#                logger.flush
+#                logger.error('AT:'+repr(float(bt.dict[PRICE])))
+#                logger.error('XT:'+repr(int(bt.dict[UNITS])))
+#                if (bt.isValidTransaction()):
+                transactions.append(bt)
+                i = i + 1
             except:
+                logger.error('ERROR:'+repr(sys.exc_info()[0]))
+                print "error "+repr(sys.exc_info()[0])
                 print "Error on this row:"
                 print repr(row)
-        logger.info('number returned:'+str(i))
+        logger.error('number returned:'+str(i))
         return transactions                
 

@@ -105,7 +105,12 @@ def loadSolr(filename,transactions):
 
 # We really want to make this a command-line argument so 
 # that we can load one data file at a time.
-response = solrCon.delete_query('*:*')
-solrCon.commit()
+def executeMain():
+    response = solrCon.delete_query('*:*')
+    solrCon.commit()
 
-SearchApi.applyToLoadedFiles(PathToDataFiles,None,loadSolr,MAXIMUM_NUMBER_TO_LOAD)
+    SearchApi.applyToLoadedFiles(PathToDataFiles,None,loadSolr,MAXIMUM_NUMBER_TO_LOAD)
+
+
+if __name__ == "__main__":
+    executeMain()
