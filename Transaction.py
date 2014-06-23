@@ -78,11 +78,8 @@ class BasicTransaction:
         self.dict = self.getStandardDictionary(raw)
 
     def getStandardDictionary(self,rawTransaction):
-        logger.error('Getting StandardDictionary')
         xdict = self.dictionaryAdapter(rawTransaction,self.datasource)
-        logger.error('ZZZ')
         xdict = self.cleanUpData(xdict)
-        logger.error('QQQ')
         return xdict
 
     def cleanUpData(self,qdict):

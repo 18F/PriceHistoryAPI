@@ -96,7 +96,9 @@ def loadChunk(filename,chunk):
     
 def loadSolr(filename,transactions):
     global idcnt
+    print "transactions lenghth"+repr(len(transactions))
     chunkedTransactions = list(chunks(transactions, 1000))
+    print "transactions lenghth"+repr(len(chunkedTransactions))
     for chunk in chunkedTransactions:
         loadChunk(filename,chunk)
 

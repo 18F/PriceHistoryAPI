@@ -14,6 +14,7 @@ from adapters.OS2Adapter import *
 from adapters.GSAAdvAdapter import *
 from adapters.LabEquipAdapter import * 
 from adapters.USASpendingAdapter import * 
+from adapters.HoustonSAPAdapter import * 
 
 from os import listdir
 from os.path import isfile, join
@@ -64,7 +65,8 @@ VERSION_ADAPTER_MAP = { '1': [loadRevAucFromCSVFile,getDictionaryFromRevAuc],
                         '2': [loadOS2FromCSVFile,getDictionaryFromOS2],
                         '3': [loadGSAAdvFromCSVFile,getDictionaryFromGSAAdv],
                         '4': [loadLabequipmentFromCSVFile,getDictionaryFromLabEquipment],
-                        '5': [loadUSASpendingFromCSVFile,getDictionaryFromUSASpending]}
+                        '5': [loadUSASpendingFromCSVFile,getDictionaryFromUSASpending],
+                        '6': [loadHoustonSAPFromCSVFile,getDictionaryFromHoustonSAP]}
 
 # This routine needs to become the basis of the SolrLodr...
 
@@ -97,6 +99,7 @@ def applyToLoadedFiles(dirpath,pattern,funToApply,maximumToLoad = ppApiConfig.LI
 
                 logger.info('Total Number Transactions Read From File'+filename \
                                 +str(len(transactions)))
+                print str(len(transactions))
                 funToApply(filename,transactions)
             else:
                 logger.error('Unknown version')
