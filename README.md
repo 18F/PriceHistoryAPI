@@ -9,10 +9,10 @@ This is part of the PriceHistory (P3) Project
 The PriceHistory (P3) project is market research tool to allow search of purchase transactions.  It is modularized into 5 github repositories:
 
 1. [PriceHistoryInstall](https://github.com/18F/PriceHistoryGUI),
-2. [PriceHistoryGUI](https://github.com/18F/PriceHistoryGUI), 
-3. [PriceHistoryAPI](https://github.com/18F/PriceHistoryAPI), 
-4. [MorrisDataDecorator](https://github.com/18F/MorrisDataDecorator), 
-5. [PriceHistoryAuth](https://github.com/18F/PriceHistoryAuth).  
+2. [PriceHistoryGUI](https://github.com/18F/PriceHistoryGUI),
+3. [PriceHistoryAPI](https://github.com/18F/PriceHistoryAPI),
+4. [MorrisDataDecorator](https://github.com/18F/MorrisDataDecorator),
+5. [PriceHistoryAuth](https://github.com/18F/PriceHistoryAuth).
 
 To learn how to install the system, please refer PriceHistoryInstall project, which contains a Vagrant install script.  That repo is actively under development in preparation of the Houston Hackathon.
 
@@ -21,10 +21,10 @@ The name "PriceHistory" is descriptive: this project shows you prices that have 
 
 # INTRODUCTION
 
-This is a project written by Robert L. Read, Martin Ringlein, Aaron Snow, and Gregory Godbout, who are all 
+This is a project written by Robert L. Read, Martin Ringlein, Aaron Snow, and Gregory Godbout, who are all
 Presidential Innovation Fellows (Round 2).  The purpose is to save the Federal Government money by
 providing a research tool that shows prices actually paid for commodities and perhaps services.  This is
-completely analogous to market research that any buyer would do, although of course other avenues of 
+completely analogous to market research that any buyer would do, although of course other avenues of
 market research should be used as well.
 
 ## STATUS
@@ -46,7 +46,7 @@ citizens transparency into their purchases.
 
 You might find some value in this code if you want an example of using Python code to load a SOLR index.
 
-You might find some value if you want to see an approach to adapting mulitple file formats to loading into 
+You might find some value if you want to see an approach to adapting mulitple file formats to loading into
 a single harmonized schema.
 
 Today, this project is specialized, but we would like to factor out the "Prices Paid" part of this
@@ -58,7 +58,7 @@ allow direct access against SOLR for security or other reasons.
 ## WHAT IT DOES
 
 This project loads a SOLR index from csv files (SolrLodr.py) and then presents a very simple API (which
-really a security restricition on the SOLR web service. The main thing it does is harmonize existing 
+really a security restricition on the SOLR web service. The main thing it does is harmonize existing
 formats (2 at present) into a single database that can be rendered. It is thus an approach to using
 simple Python programs to harmonize data.  Eventually, we hope it will be used on many data sets.
 
@@ -66,15 +66,15 @@ In docs/example.SOLR.schema.xml is an example of the schema.xml file that I use.
 
 ## THE SISTER PROJECT
 
-Although we are presenting an Api which (when hosted) will let any programmer do as they please in 
+Although we are presenting an Api which (when hosted) will let any programmer do as they please in
 querying the haronized databases, most users will use the GUI.
 
 The GUI is in a project called PriceHistory GUI.  That project has the best installation instructions, although this
-project is completely independent of that one.  PriceHistoryGUI uses PriceHistoryAPI but PriceHistoryAPI depends only on 
-the mode P3Auth (also one of my github repos) and open-source software which I did not write, mentioned at 
+project is completely independent of that one.  PriceHistoryGUI uses PriceHistoryAPI but PriceHistoryAPI depends only on
+the mode P3Auth (also one of my github repos) and open-source software which I did not write, mentioned at
 PriceHistoryGUI.
 
-The easiest way to understand what PriceHistoryAPI does and play with it is to install PriceHistoryGUI---but that 
+The easiest way to understand what PriceHistoryAPI does and play with it is to install PriceHistoryGUI---but that
 is not strictly necessary.
 
 ## THE PHILOSOPHY
@@ -87,20 +87,20 @@ But seriously, folks, the idea is to make it work as much like Google as possibl
 ## HOW YOU CAN HELP
 
 * I'm a Python neophyte, this code can probably be improved.
-* We need to modularize all the actual named fields to that this code could be generalized for 
+* We need to modularize all the actual named fields to that this code could be generalized for
 some other purpose.
-* We need to write a push API so that new data can be pushed rather than delivered through a 
+* We need to write a push API so that new data can be pushed rather than delivered through a
 CSV file as today.
 
 ## USING THE PROJECT
 
-Note that abn example file exists in the "cookedData" file. In that directory you fill find the 
-file FY14TX-pppifver-USASpending-5-0-0-0-1.csv.  This file 
-is simply a renamed (and unchanged) export from the site USASpending.gov, in this case for 
-fiscal year 2014 and the state of Texas. It contains 23K records of completely public data 
+Note that abn example file exists in the "cookedData" file. In that directory you fill find the
+file FY14TX-pppifver-USASpending-5-0-0-0-1.csv.  This file
+is simply a renamed (and unchanged) export from the site USASpending.gov, in this case for
+fiscal year 2014 and the state of Texas. It contains 23K records of completely public data
 for testing this code.  Note that the "Units" field is constructed by this adapter, because
 USASpending.gov does not actually contain "number of units purchased data".
- The basic approach of PriceHistoryAPI at present is to read .CSV files like 
+ The basic approach of PriceHistoryAPI at present is to read .CSV files like
 that one.  Note that name of the file follows a strict convention that defines which adapter to use.
 If you would like to use this project for something else, create your own adapter, possibly using
 the same filename/versioning convention.
@@ -115,4 +115,12 @@ in ppcofig.example.py.  I have added it here only as an example.
   This is a small data file, but when placed in the
 correct (not example) cookedData directory, will allow the execution of "python SolrLodr.py"
 to load 23K records of completely public data for testing your own site.
+
+### Public domain
+
+This project is in the worldwide [public domain](LICENSE.md). As stated in [CONTRIBUTING](CONTRIBUTING.md):
+
+> This project is in the public domain within the United States, and copyright and related rights in the work worldwide are waived through the [CC0 1.0 Universal public domain dedication](https://creativecommons.org/publicdomain/zero/1.0/).
+>
+> All contributions to this project will be relatedsed under the CC0 dedication. By submitting a pull request, you are agreeing to comply with this waiver of copyright interest.
 
